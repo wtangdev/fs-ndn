@@ -20,6 +20,8 @@ namespace fsndn {
     extern int user_id;
     extern int group_id;
 
+    extern int fsndn_id;
+
     extern ndn::Name certificateName;
     extern ndn::ptr_lib::shared_ptr<ndn::KeyChain> keyChain;
     extern std::string global_prefix;
@@ -65,5 +67,22 @@ inline int split_all_component(const std::string &path, std::vector<std::string>
 
     return 1;
 }
+
+inline int name2path(const std::string &name, std::string &path)
+{
+    size_t comp_pos;
+    path = name;
+
+    comp_pos = name.find("/",0);
+    while( comp_pos != string::npos )
+    {
+        path.replace(comp_pos,1,"_");
+        comp_pos +=1;
+        comp_pos = name.find("/",comp_pos);
+    }
+
+    return 0;
+}
+
 
 #endif //FS_NDN_FS_HPP

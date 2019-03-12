@@ -18,7 +18,16 @@ INode::INode() {
 }
 
 INode::INode(string node_name, time_t mtime, time_t atime, time_t ctime) {
-    ndn::Name ndn_name(node_name);
+    // 获取文件路径
+    if (node_name == "/") {
+        this->is_root = true;
+    }
+    string pathname = fsndn::root_path;
+    pathname.append(node_name);
+    this->filepath = pathname;
+    string prefix = fsndn::global_prefix;
+    prefix.append(node_name);
+    ndn::Name ndn_name(prefix);
     this->ndn_name = ndn_name;
     this->name = ndn_name.getSubName(-1).toUri().substr(1);
     this->mtime = mtime;
@@ -26,6 +35,7 @@ INode::INode(string node_name, time_t mtime, time_t atime, time_t ctime) {
     this->ctime = ctime;
     user_id = fsndn::user_id;
     group_id = fsndn::group_id;
+//    cout<< " XX "<< node_name<< " ndn_name: "<< ndn_name<< " name: "<< name<< " file_path: "<< filepath<< endl;
 }
 
 INode::INode(INode * other) {
@@ -44,6 +54,10 @@ bool INode::operator==(const string & otherName) const {
 
 bool INode::operator==(const INode * & otherNode) const {
     return name == otherNode->name;
+}
+
+string INode::getPath() {
+    return this->filepath;
 }
 
 time_t INode::getAtime() {
@@ -74,6 +88,11 @@ ndn::Name INode::getNdnName() {
     return ndn_name;
 }
 
+string INode::getNdnPath() {
+    ndn::Name root_prefix(fsndn::global_prefix);
+    return ndn_name.getSubName(root_prefix.getComponentCount()).toUri();
+}
+
 string INode::getName() {
     return this->name;
 }
@@ -94,7 +113,9 @@ int INode::setMtime(time_t mtime) {
     this->mtime = mtime;
 }
 
-
+bool INode::isRoot() {
+    return is_root;
+}
 
 EmptyINode::EmptyINode(){
     name = "EmptyINode";
@@ -106,4 +127,5 @@ EmptyINode::EmptyINode(){
 bool EmptyINode::isNULL() {
     return true;
 }
+
 

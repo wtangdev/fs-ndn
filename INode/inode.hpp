@@ -23,6 +23,8 @@ public:
     string getName();
     string getNdnStringName();
     ndn::Name getNdnName();
+    string getNdnPath();
+    string getPath();
     time_t getMtime();
     time_t getAtime();
     time_t getCtime();
@@ -30,7 +32,7 @@ public:
     int getGroupId();
     virtual bool isNULL(){};
 
-    virtual bool isRoot(){};
+    bool isRoot();
 
     virtual bool isDirectory(){};
     INode();
@@ -45,6 +47,7 @@ public:
     virtual void showChildrenLink(){};
 
 protected:
+    string filepath; // 文件在系统中的实际路径
     string name;    //文件或目录名
     ndn::Name ndn_name; // 文件的ndn名称
     time_t mtime;   // 最近一次修改文件内容的时间
@@ -64,6 +67,7 @@ protected:
     int setCtime(time_t ctime);
 
 private:
+    bool is_root = false;
     long long permission;   // 访问权限
     int user_id;
     int group_id;

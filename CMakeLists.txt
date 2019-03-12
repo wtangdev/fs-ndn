@@ -3,11 +3,14 @@ project(fs-ndn)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES fs.cpp fs.hpp filestore.cpp filestore.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/INodeFile.cpp INode/INodeFile.hpp)
+set(SOURCE_FILES fs.cpp fs.hpp filestore.cpp filestore.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp NameNode/namenode.cpp NameNode/namenode.hpp INode/fileblock.cpp INode/fileblock.hpp)
 
 add_executable(fs ${SOURCE_FILES})
 
-include_directories(/usr/include)
-link_directories(/usr/lib)
 
-target_link_libraries(fs jsoncpp ndn-cpp)
+include_directories(/usr/local/include)
+# Remember DO NOT USE LINK_DIRECTORIES! JUST USE find_library
+find_library(NDN_LIBRARY ndn-cpp /usr/locak/lib)
+
+
+target_link_libraries(fs PUBLIC ${NDN_LIBRARY})

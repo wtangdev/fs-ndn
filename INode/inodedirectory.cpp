@@ -4,6 +4,7 @@
 
 #include "inodedirectory.hpp"
 #include "../logger.hpp"
+#include "sys/stat.h"
 
 list<INode *>::iterator find(list<INode *>::iterator begin, list<INode *>::iterator end, string name) {
     list<INode *>::iterator it;
@@ -38,7 +39,11 @@ INodeDirectory::INodeDirectory() : INode() {
 // 按照扁平化和结构化共存的设计理念，用户不会主动去创建目录，所以所有的目录均是由INodeFile类
 // 创建的，用户指明路径（名称），系统自动创建相应的路径，方便结构化访问。
 INodeDirectory::INodeDirectory(string name, time_t mtime, time_t atime, time_t ctime) : INode(name, mtime, atime, ctime) {
-
+    // 使用mkdir系统调用创建一个真实的文件夹
+    // TODO: 研究是否需要创建一个真实的文件夹，直接扁平化的存储是否可行
+    // TODO: 用户无需创建真实的目录，读取文件所处的目录只需要使用名称匹配即可
+    mkdir(this->getPath().c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+//    cout<< this->getPath()<< endl;
 }
 
 INodeDirectory::INodeDirectory(INodeDirectory * other) : INode((INode *)other){
@@ -98,7 +103,7 @@ INode * INodeDirectory::getChildNodeLink(string name){
     if (children.size() == 0) {
         // TODO: When to release it
         EmptyINode * emptyINode = new EmptyINode;
-        FILE_LOG(LOG_DEBUG)<< "The directory is empty"<< endl;
+        FILE_LOG(LOG_DEBUG)<< "The directory is empty "<<name << endl;
         // 无子节点，返回一个空INode
         return emptyINode;
     }
