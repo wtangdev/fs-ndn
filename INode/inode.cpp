@@ -22,9 +22,7 @@ INode::INode(string node_name, time_t mtime, time_t atime, time_t ctime) {
     if (node_name == "/") {
         this->is_root = true;
     }
-    string pathname = fsndn::root_path;
-    pathname.append(node_name);
-    this->filepath = pathname;
+    this->file_name = node_name;
     string prefix = fsndn::global_prefix;
     prefix.append(node_name);
     ndn::Name ndn_name(prefix);
@@ -46,19 +44,19 @@ INode::INode(INode * other) {
     ctime = other->ctime;
     user_id = other->getUserId();
     group_id = other->getGroupId();
-    this->filepath = other->filepath;
+    this->file_name = other->file_name;
 }
 
 bool INode::operator==(const string & otherName) const {
-    return name == otherName;
+    return this->file_name == otherName;
 }
 
 bool INode::operator==(const INode * & otherNode) const {
-    return name == otherNode->name;
+    return this->file_name == otherNode->name;
 }
 
 string INode::getPath() {
-    return this->filepath;
+    return this->file_name;
 }
 
 time_t INode::getAtime() {
@@ -77,6 +75,11 @@ int INode::getGroupId() {
     return this->group_id;
 }
 
+bool INode::isNULL()
+{
+    return false;
+}
+
 int INode::getUserId() {
     return this->user_id;
 }
@@ -91,31 +94,37 @@ ndn::Name INode::getNdnName() {
 
 string INode::getNdnPath() {
     ndn::Name root_prefix(fsndn::global_prefix);
-    return ndn_name.getSubName(root_prefix.getComponentCount()).toUri();
+//    return ndn_name.getSubName(root_prefix.getComponentCount()).toUri();
+    return ndn_name.getSubName(root_prefix.size()).toUri();
 }
 
 string INode::getName() {
     return this->name;
 }
 
-int INode::setNdnName(string name) {
+void INode::setNdnName(string name) {
     this->ndn_name = name;
 }
 
-int INode::setAtime(time_t atime) {
+void INode::setAtime(time_t atime) {
     this->atime = atime;
 }
 
-int INode::setCtime(time_t ctime) {
+void INode::setCtime(time_t ctime) {
     this->ctime = ctime;
 }
 
-int INode::setMtime(time_t mtime) {
+void INode::setMtime(time_t mtime) {
     this->mtime = mtime;
 }
 
 bool INode::isRoot() {
     return is_root;
+}
+
+bool INode::isDirectory()
+{
+    return false;
 }
 
 EmptyINode::EmptyINode(){

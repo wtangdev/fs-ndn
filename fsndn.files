@@ -1,3 +1,4 @@
+test.cpp
 CMakeLists.txt
 DataNode/datanode.cpp
 DataNode/datanode.hpp

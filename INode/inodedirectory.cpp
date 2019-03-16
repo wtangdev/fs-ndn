@@ -151,7 +151,7 @@ int INodeDirectory::getExistingPathINodesLink(vector<string> components, INode *
     int count = 0;
     if (index > 0)
         index = 0;
-    while (count < components.size() && !curNode == NULL) {
+    while (count < components.size() && curNode != NULL) {
 //        cout<<curNode->getName()<< " "<< (void *) curNode<< " ";
         if (index >= 0) {
 //            delete existing[index];

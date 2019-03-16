@@ -30,11 +30,11 @@ public:
     time_t getCtime();
     int getUserId();
     int getGroupId();
-    virtual bool isNULL(){};
+    virtual bool isNULL();
 
     bool isRoot();
 
-    virtual bool isDirectory(){};
+    virtual bool isDirectory();
     INode();
     INode(string name, time_t mtime, time_t atime, time_t ctime);
     INode(INode * other);
@@ -47,7 +47,7 @@ public:
     virtual void showChildrenLink(){};
 
 protected:
-    string filepath; // 文件在系统中的实际路径
+    string file_name; // 文件在当前节点的文件名
     string name;    //文件或目录名
     ndn::Name ndn_name; // 文件的ndn名称
     time_t mtime;   // 最近一次修改文件内容的时间
@@ -61,10 +61,10 @@ protected:
 
 
 
-    int setNdnName(string name);
-    int setMtime(time_t mtime);
-    int setAtime(time_t atime);
-    int setCtime(time_t ctime);
+    void setNdnName(string name);
+    void setMtime(time_t mtime);
+    void setAtime(time_t atime);
+    void setCtime(time_t ctime);
 
 private:
     bool is_root = false;

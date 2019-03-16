@@ -80,6 +80,7 @@ int FileBlock::write(unsigned char *content, int size) {
     FILE_LOG(LOG_DEBUG)<< this->path<<"  "<< offset<< endl;
     fout.write(reinterpret_cast<char *>(content), sizeof(unsigned char) * size);
     fout.close();
+    return 0;
 }
 
 int FileBlock::read(unsigned char *buffer, int size) {
@@ -98,6 +99,7 @@ int FileBlock::read(unsigned char *buffer, int size) {
         fin.close();
 //        cout<< this->path<< " "<< size<<" "<< file_size<< " "<< this->offset<< endl<< buffer<< endl;
     }
+    return 0;
 }
 
 bool FileBlock::operator<(const FileBlock &otherfile) const {
