@@ -13,8 +13,6 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/name.hpp>
-#include "logger.hpp"
-#include "INode/inodedirectory.hpp"
 
 namespace fsndn {
     extern int user_id;
@@ -35,7 +33,7 @@ namespace fsndn {
     extern const int default_files_per_directory;
 
     // 根节点
-    extern INodeDirectory root;
+//    extern INodeDirectory root;
 
 }
 
@@ -74,7 +72,7 @@ inline int name2path(const std::string &name, std::string &path)
     path = name;
 
     comp_pos = name.find("/",0);
-    while( comp_pos != string::npos )
+    while( comp_pos != std::string::npos )
     {
         path.replace(comp_pos,1,"_");
         comp_pos +=1;

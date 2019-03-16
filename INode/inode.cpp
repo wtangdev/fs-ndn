@@ -46,6 +46,7 @@ INode::INode(INode * other) {
     ctime = other->ctime;
     user_id = other->getUserId();
     group_id = other->getGroupId();
+    this->filepath = other->filepath;
 }
 
 bool INode::operator==(const string & otherName) const {

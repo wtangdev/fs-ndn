@@ -6,7 +6,6 @@
 #define FS_NDN_FILEBLOCK_HPP
 
 #include "iostream"
-#include "../fs.hpp"
 using namespace std;
 
 class SFileTable {

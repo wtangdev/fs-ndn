@@ -75,6 +75,7 @@ private:
 };
 
 // 设计一个空对象，用于在查询无此节点时返回
+// 空对象的设置确实带来了一定的方便，但是会给程序设计时带来严重的内存泄漏风险，所以计划取消使用空对象类。
 class EmptyINode:public INode {
 public:
     EmptyINode();

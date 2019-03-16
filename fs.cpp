@@ -3,13 +3,15 @@
 //
 
 #include "fs.hpp"
-#include "INode/inodedirectory.hpp"
-#include "INode/inodefile.hpp"
-#include "INode/fileblock.hpp"
+//#include "INode/inodedirectory.hpp"
+//#include "INode/inodefile.hpp"
+//#include "INode/fileblock.hpp"
+#include "NameNode/namenode.hpp"
 #include "unistd.h"
 #include "stdio.h"
 #include "fstream"
 #include "ostream"
+#include "logger.hpp"
 
 using namespace std;
 
@@ -23,7 +25,7 @@ string fsndn::global_prefix = "/ndn/fsndn/prefix";
 const int fsndn::seg_size = 2048;
 
 
-INodeDirectory fsndn::root("/", time(&time1), time(&time1), time(&time1));
+//INodeDirectory fsndn::root("/", time(&time1), time(&time1), time(&time1));
 
 int main() {
 //    cout<< "Hello World!"<< endl;
@@ -141,26 +143,35 @@ int main() {
 //    fin.close();
 
 // 测试 fileblock
-     ifstream fin("/Users/anson/Desktop/jpjh8k.md", ios::binary | ios::in);
-    if (!fin) {
-        cout<< "File open failed\n";
-    } else {
-//        istream::pos_type current_pos = fin.tellg();    // 记录当前位置
-        int current_pos = fin.tellg();
-        fin.seekg(0, ios_base::end);    // 移动到末尾
-//        istream::pos_type file_size = fin.tellg();  // 此时的位置显然就是文件大小
-        int file_size = fin.tellg();
-        fin.seekg(current_pos); //回到初始位置
-        FILE_LOG(LOG_DEBUG)<< "file_size="<<file_size<< endl;
-        unsigned char data[file_size];
-//        memset(data, 0, file_size);
-        fin.read(reinterpret_cast<char *>(data), sizeof(unsigned char) * file_size);    // 读
-        fin.close();
-        INodeFile iNodeFile("/ndn/c1/c2/data1", time(&time1), time(&time1), time(&time1));
-        iNodeFile.write(data, file_size);
-        unsigned char content[iNodeFile.getSize()];
-        iNodeFile.read(content, iNodeFile.getSize());
-        FILE_LOG(LOG_DEBUG)<< content<< endl;
+//      ifstream fin("/Users/anson/Desktop/jpjh8k.md", ios::binary | ios::in);
+//     if (!fin) {
+//         cout<< "File open failed\n";
+//     } else {
+// //        istream::pos_type current_pos = fin.tellg();    // 记录当前位置
+//         int current_pos = fin.tellg();
+//         fin.seekg(0, ios_base::end);    // 移动到末尾
+// //        istream::pos_type file_size = fin.tellg();  // 此时的位置显然就是文件大小
+//         int file_size = fin.tellg();
+//         fin.seekg(current_pos); //回到初始位置
+//         FILE_LOG(LOG_DEBUG)<< "file_size="<<file_size<< endl;
+//         unsigned char data[file_size];
+// //        memset(data, 0, file_size);
+//         fin.read(reinterpret_cast<char *>(data), sizeof(unsigned char) * file_size);    // 读
+//         fin.close();
+//         INodeFile iNodeFile("/ndn/c1/c2/data1", time(&time1), time(&time1), time(&time1));
+//         iNodeFile.write(data, file_size);
+//         unsigned char content[iNodeFile.getSize()];
+//         iNodeFile.read(content, iNodeFile.getSize());
+//         FILE_LOG(LOG_DEBUG)<< content<< endl;
+//     }
+    NameNode namenode;
+    namenode.addEmptyFile("/c1", time(&time1), time(&time1), time(&time1));
+    namenode.addEmptyFile("/c1/c2", time(&time1), time(&time1), time(&time1)) ;
+    namenode.addEmptyFile("/c1/c22", time(&time1), time(&time1), time(&time1));
+    namenode.addEmptyFile("/c1/c2/c3", time(&time1), time(&time1), time(&time1));
+    vector<string> children = namenode.showChildren(fsndn::global_prefix+"/c1");
+    for (auto str : children) {
+        cout<< str<< endl;
     }
     return 0;
 }

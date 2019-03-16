@@ -3,6 +3,8 @@
 //
 
 #include "fileblock.hpp"
+#include "../fs.hpp"
+#include "../logger.hpp"
 
 // 初始化空闲文件表
 vector<SFileTable> FileBlock::space_path;

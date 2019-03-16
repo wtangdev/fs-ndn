@@ -47,7 +47,9 @@ INodeDirectory::INodeDirectory(string name, time_t mtime, time_t atime, time_t c
 }
 
 INodeDirectory::INodeDirectory(INodeDirectory * other) : INode((INode *)other){
-    children = other->getChildren();
+    list<INode *> other_children;
+    other->getChildren(other_children);
+    this->children = other_children;
 }
 
 INodeDirectory::~INodeDirectory() {
@@ -59,10 +61,10 @@ INodeDirectory::~INodeDirectory() {
     }
 }
 
-list<INode *> INodeDirectory::getChildren() {
-    list<INode *> new_children;
+// 使用引用传参，防止内存泄漏
+int INodeDirectory::getChildren(list<INode *> & new_children) {
     copy(children.begin(), children.end(), back_inserter(new_children));
-    return new_children;
+    return 0;
 }
 
 bool INodeDirectory::isNULL() {
@@ -99,42 +101,47 @@ bool INodeDirectory::replaceChildLink(INode *newChild){
     return true;
 }
 
+// 取消空对象，对于找不到的节点直接返回空指针NULL
 INode * INodeDirectory::getChildNodeLink(string name){
     if (children.size() == 0) {
         // TODO: When to release it
-        EmptyINode * emptyINode = new EmptyINode;
+//        EmptyINode * emptyINode = new EmptyINode;
         FILE_LOG(LOG_DEBUG)<< "The directory is empty "<<name << endl;
         // 无子节点，返回一个空INode
-        return emptyINode;
+//        return emptyINode;
+        return NULL;
     }
     list<INode *>::iterator it;
     it = find(children.begin(), children.end(), name);
     if (it == children.end()){
         // TODO: When to release it
-        EmptyINode * emptyINode = new EmptyINode;
+//        EmptyINode * emptyINode = new EmptyINode;
         FILE_LOG(LOG_DEBUG)<< "No such INode"<< endl;
         // 查无此节点，返回空节点
-        return emptyINode;
+        return NULL;
     }
     return (*it);
 }
 
+// 取消空对象，对于找不到的节点直接返回空指针NULL
 INode * INodeDirectory::getNodeLink(string path){
     vector<string> components;
     split_all_component(path, components);
     INode ** node = new INode*[1];
-    node[0] = new EmptyINode;
+//    node[0] = new EmptyINode;
+    node[0] = NULL;
     getExistingPathINodesLink(components, node, 1-components.size());
     return node[0];
 }
 
+// 取消空对象，对于找不到的节点直接返回空指针NULL
 INode ** INodeDirectory::getNodesLink(string path){
     vector<string> components;
     split_all_component(path, components);
     INode ** nodes = new INode*[components.size()];
-    for(int i = 0; i < components.size(); i++) {
-        nodes[i] = new EmptyINode();    // 全部初始化为空对象
-    }
+//    for(int i = 0; i < components.size(); i++) {
+//        nodes[i] = new EmptyINode();    // 全部初始化为空对象
+//    }
     getExistingPathINodesLink(components, nodes, 0);
     return nodes;
 }
@@ -144,10 +151,10 @@ int INodeDirectory::getExistingPathINodesLink(vector<string> components, INode *
     int count = 0;
     if (index > 0)
         index = 0;
-    while (count < components.size() && !curNode->isNULL()) {
+    while (count < components.size() && !curNode == NULL) {
 //        cout<<curNode->getName()<< " "<< (void *) curNode<< " ";
         if (index >= 0) {
-            delete existing[index];
+//            delete existing[index];
             existing[index] = curNode;
         }
         if(!curNode->isDirectory() || count == components.size()-1){
@@ -186,8 +193,9 @@ INode * INodeDirectory::nextChild(string name) {
     if (name.length() == 0) {
         FILE_LOG(LOG_ERROR)<< "Empty Name"<< endl;
         // TODO: When to release it
-        EmptyINode * emptyINode = new EmptyINode;
-        return emptyINode;
+//        EmptyINode * emptyINode = new EmptyINode;
+//        return emptyINode;
+        return NULL;
     }
     list<INode *>::iterator it = find(children.begin(), children.end(), name);
     it++;
@@ -196,8 +204,9 @@ INode * INodeDirectory::nextChild(string name) {
 
 int INodeDirectory::addNode(string path, INode * newNode) {
     INode * curNode = getNodeLink(path);
-    if (curNode->isNULL()) {
-        delete(curNode);
+//    if (curNode->isNULL()) {
+    if (curNode == NULL) {
+//        delete(curNode);
         FILE_LOG(LOG_ERROR)<<"No such path!"<< endl;
         return -1;
     }

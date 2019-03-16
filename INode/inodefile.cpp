@@ -4,11 +4,14 @@
 
 #include "inodefile.hpp"
 #include "../fs.hpp"
+#include "inodedirectory.hpp"
 
 using namespace std;
 
 INodeFile::INodeFile() : INode(){}
 
+/*
+ * 此处使用了INodeDirectory
 INodeFile::INodeFile(string name, time_t mtime, time_t atime, time_t ctime) : INode(name, mtime, atime, ctime){
 
     // 根据路径创建相应的目录以满足结构化访问
@@ -19,7 +22,7 @@ INodeFile::INodeFile(string name, time_t mtime, time_t atime, time_t ctime) : IN
     components[0] = "";
     for (size_t i = 1; i < components.size()-1; i++) {
         INodeDirectory * tempnode = (INodeDirectory *) curnode->getNodeLink(components[i]);
-        if (!tempnode->isNULL()) {
+        if (!tempnode == NULL) {
             curnode = tempnode;
             break;
         }
@@ -34,9 +37,14 @@ INodeFile::INodeFile(string name, time_t mtime, time_t atime, time_t ctime) : IN
     curnode->addChild(this);
     this->parent = curnode;
 }
+ */
+
+INodeFile::INodeFile(string name, time_t mtime, time_t atime, time_t ctime) : INode(name, mtime, atime, ctime){
+
+}
 
 INodeFile::INodeFile(INodeFile *other) : INode(other){
-    this->filepath = other->filepath;
+//    this->filepath = other->filepath;
 }
 
 int INodeFile::getSize() {

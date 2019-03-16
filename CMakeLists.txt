@@ -3,7 +3,7 @@ project(fs-ndn)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES fs.cpp fs.hpp filestore.cpp filestore.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp NameNode/namenode.cpp NameNode/namenode.hpp INode/fileblock.cpp INode/fileblock.hpp)
+set(SOURCE_FILES fs.cpp fs.hpp filestore.cpp filestore.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp)
 
 add_executable(fs ${SOURCE_FILES})
 

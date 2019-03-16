@@ -42,9 +42,11 @@ public:
     INode * getChildNode(string name);
     // 获取给定路径上的INode
     INode * getNodeLink(string path);
+//    int getNodeLink(string path, INode * );
     INode * getNode(string path);
     // 获取指定路径上的所有INode
     INode ** getNodesLink(string path);
+//    int getNodesLink(string path, INode ** );
     INode ** getNodes(string path);
     // 获取指定路径上的所有节点
     int getExistingPathINodesLink(vector<string> components, INode ** existing, int index);
@@ -60,7 +62,8 @@ public:
     int clearAllBlockLink();
     int clearAllBlock();
 
-    list<INode *> getChildren();
+    // 修改为通过饮用返回参数，而不是使用返回值，从而减小内存泄漏的风险
+    int getChildren(list<INode *> & new_children);
 
 
 
