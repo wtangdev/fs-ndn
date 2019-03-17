@@ -16,7 +16,7 @@ public:
 
     int getSize();
     
-    int write(unsigned char * content, int size);
+    int write(const unsigned char * content, int size);
     int read(unsigned char * buffer, int size);
 
 

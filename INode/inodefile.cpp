@@ -64,7 +64,7 @@ bool INodeFile::isRoot() {
     return false;
 }
 
-int INodeFile::write(unsigned char * content, int size){
+int INodeFile::write(const unsigned char * content, int size){
     this->size = size;
     if (size <= fsndn::seg_size) {
         FileBlock fileBlock(this->getNdnPath(), content, size, 0);
@@ -94,7 +94,6 @@ int INodeFile::read(unsigned char *buffer, int size) {
     int seg_size = fsndn::seg_size;
     for (auto item : fileblocks) {
         int temp_seg = item.getSeg();
-        FILE_LOG(LOG_DEBUG)<<"seg ="<< temp_seg<< endl;
         int temp_size = item.getSize();
         unsigned char temp_content[temp_size];
         item.read(temp_content, temp_size);

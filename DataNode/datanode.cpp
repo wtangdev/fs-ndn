@@ -35,7 +35,7 @@ int DataNode::addEmptyFile(string name, time_t mtime, time_t atime, time_t ctime
     return 0;
 }
 
-int DataNode::addNewFile(string name, unsigned char *content, int size, time_t mtime, time_t atime, time_t ctime)
+int DataNode::addNewFile(string name, const unsigned char *content, int size, time_t mtime, time_t atime, time_t ctime)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it != this->names.end())
@@ -44,7 +44,6 @@ int DataNode::addNewFile(string name, unsigned char *content, int size, time_t m
         return -1;
     }
     INodeFile new_file(name, mtime, atime, ctime);
-    cout< "Name = " << new_file.getName() << " NdnName = "<< new_file.getNdnName()<<" NDNpath ="<<new_file.getNdnPath()<< endl;
     new_file.write(content, size);
     this->names.push_back(new_file);
     return 0;
@@ -78,7 +77,7 @@ int DataNode::getFileSize(string name)
     return (*it).getSize();
 }
 
-int DataNode::writeToFile(string name, unsigned char *content, int size)
+int DataNode::writeToFile(string name, const unsigned char *content, int size)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it == this->names.end())

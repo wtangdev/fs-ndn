@@ -9,7 +9,7 @@
 // 初始化空闲文件表
 vector<SFileTable> FileBlock::space_path;
 
-FileBlock::FileBlock(string name, unsigned char *data, int size, int seg) {
+FileBlock::FileBlock(string name, const unsigned char *data, int size, int seg) {
     this->name = name;
     this->size = size;
     this->seg = seg;
@@ -24,7 +24,7 @@ FileBlock::FileBlock(FileBlock *other) {
     this->path = other->path;
 }
 
-int FileBlock::write(unsigned char *content, int size) {
+int FileBlock::write(const unsigned char *content, int size) {
     bool need_new_file = true;
     int offset = 0;
     // 判断size是否需要新建一个fsndn文件来存储
@@ -78,7 +78,7 @@ int FileBlock::write(unsigned char *content, int size) {
     fout.seekp(offset);
     this->offset = offset;
     FILE_LOG(LOG_DEBUG)<< this->path<<"  "<< offset<< endl;
-    fout.write(reinterpret_cast<char *>(content), sizeof(unsigned char) * size);
+    fout.write(reinterpret_cast<const char *>(content), sizeof(unsigned char) * size);
     fout.close();
     return 0;
 }

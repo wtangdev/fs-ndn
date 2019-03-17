@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+option java_package = "io.grpc.examples";
+
+package fsndnproto;
+
+// The DataNode service definition.
+service DataNodeSer {
+  // Sends a greeting
+  // rpc SayHello (HelloRequest) returns (HelloReply) {};
+  rpc AddEmptyFile (AddEmptyFileRequest) returns (IntReply) {};
+  rpc AddNewFile (AddNewFileRequest) returns (IntReply) {};
+  rpc DelFile (FileNameRequest) returns (IntReply) {};
+  rpc DelDir (PrefixRequest) returns (IntReply) {};
+  rpc GetFileSize (FileNameRequest) returns (IntReply) {};
+  rpc WriteToFile (WriteRequest) returns (IntReply) {};
+  rpc ReadFromFile (ReadRequest) returns (ReadReply) {};
+  rpc GetChildren (PrefixRequest) returns (ChildrenReply) {};
+  rpc GetAllChildren (EmptyRequest) returns (ChildrenReply) {};
+}
+
+// The Request message containing the user's name.
+message AddEmptyFileRequest {
+    string name = 1;
+    fixed64 mtime = 2;
+    fixed64 atime = 3;
+    fixed64 ctime = 4;
+}
+
+message AddNewFileRequest {
+    string name = 1;
+    bytes content = 2;
+    int32 size = 3;
+    fixed64 mtime = 4;
+    fixed64 atime = 5;
+    fixed64 ctime = 6;
+}
+
+message FileNameRequest {
+    string name = 1;
+}
+
+message PrefixRequest {
+    string prefix = 1;
+}
+
+message ReadRequest {
+    string name = 1;
+    int32 size = 2;
+}
+
+message WriteRequest {
+    string name = 1;
+    bytes content = 2;
+    int32 size = 3;
+}
+
+message EmptyRequest {
+
+}
+
+// The response message containing the greetings
+message IntReply {
+    sint32 result = 1;
+}
+
+message ReadReply {
+    bytes buffer = 1;
+}
+
+message ChildrenReply {
+  repeated string children = 1;
+}

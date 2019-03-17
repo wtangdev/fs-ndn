@@ -33,14 +33,14 @@ class FileBlock {
 public:
     static vector<SFileTable> space_path;
 
-    FileBlock(string name, unsigned char * data, int size ,int seg);
+    FileBlock(string name, const unsigned char * data, int size ,int seg);
     FileBlock(FileBlock * other);
 
     int getSeg();
     int getSize();
 
     int read(unsigned char * buffer, int size);
-    int write(unsigned char * content, int size);
+    int write(const unsigned char * content, int size);
     vector<SFileTable> getSpaceTable();
     static void updateSpaceTable(string path, int size);
 
