@@ -9,7 +9,7 @@
 // 初始化空闲文件表
 vector<SFileTable> FileBlock::space_path;
 
-FileBlock::FileBlock(string name, const unsigned char *data, int size, int seg) {
+FileBlock::FileBlock(string name, const char *data, int size, int seg) {
     this->name = name;
     this->size = size;
     this->seg = seg;
@@ -24,7 +24,7 @@ FileBlock::FileBlock(FileBlock *other) {
     this->path = other->path;
 }
 
-int FileBlock::write(const unsigned char *content, int size) {
+int FileBlock::write(const char *content, int size) {
     bool need_new_file = true;
     int offset = 0;
     // 判断size是否需要新建一个fsndn文件来存储
@@ -78,12 +78,12 @@ int FileBlock::write(const unsigned char *content, int size) {
     fout.seekp(offset);
     this->offset = offset;
     FILE_LOG(LOG_DEBUG)<< this->path<<"  "<< offset<< endl;
-    fout.write(reinterpret_cast<const char *>(content), sizeof(unsigned char) * size);
+    fout.write(reinterpret_cast<const char *>(content), sizeof(char) * size);
     fout.close();
     return 0;
 }
 
-int FileBlock::read(unsigned char *buffer, int size) {
+int FileBlock::read(char *buffer, int size) {
     ifstream fin(this->path, ios::binary);
     if (!fin) {
         FILE_LOG(LOG_DEBUG) << "FileBlock read :File open failed\n";
@@ -93,9 +93,9 @@ int FileBlock::read(unsigned char *buffer, int size) {
         istream::pos_type file_size = fin.tellg();  // 此时的位置显然就是文件大小
 //        fin.seekg(current_pos); //回到初始位置
         fin.seekg(this->offset);
-//        unsigned char *data = new unsigned char(size);
+//        char *data = new char(size);
 //        memset(data, 0, size);
-        fin.read(reinterpret_cast<char *>(buffer), sizeof(unsigned char) * size);    // 读
+        fin.read(reinterpret_cast<char *>(buffer), sizeof(char) * size);    // 读
         fin.close();
 //        cout<< this->path<< " "<< size<<" "<< file_size<< " "<< this->offset<< endl<< buffer<< endl;
     }

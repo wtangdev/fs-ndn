@@ -14,11 +14,15 @@ public:
     bool isRoot();
     bool isDirectory();
 
-    int getSize();
+    long long getSize();
     
-    int write(const unsigned char * content, int size);
-    int read(unsigned char * buffer, int size);
+    int write(const char * content, long long size);
+    int read(char * buffer, long long size);
 
+    int insertSeg(const char * content, int size, int seg);
+    int readSeg(char * buffer, int size, int seg);
+
+    int removeFile();
 
     INodeFile();
     INodeFile(string name, time_t mtime, time_t atime, time_t ctime);
@@ -27,7 +31,7 @@ public:
 
 private:
     vector<FileBlock> fileblocks;
-    int size;
+    long long size;
 };
 
 

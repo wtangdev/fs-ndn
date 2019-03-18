@@ -1,0 +1,5 @@
+cmake-build-debug/proto-src
+DataNode
+protos
+NameNode
+.

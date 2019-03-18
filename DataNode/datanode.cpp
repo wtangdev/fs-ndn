@@ -14,11 +14,13 @@ vector<INodeFile>::iterator findFile(vector<INodeFile> &files, string name)
     return it;
 }
 
-DataNode::DataNode()
+DataNode::DataNode(long long node_size)
 {
     time_t time1;
     INodeFile rootnode("", time(&time1), time(&time1), time(&time1));
     this->names.push_back(rootnode);
+    this->node_size = node_size;
+    this->used_size = 0;
 }
 
 int DataNode::addEmptyFile(string name, time_t mtime, time_t atime, time_t ctime)
@@ -26,7 +28,7 @@ int DataNode::addEmptyFile(string name, time_t mtime, time_t atime, time_t ctime
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it != this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN already have file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN already has file named " << name << endl;
         return -1;
     }
     INodeFile new_file(name, mtime, atime, ctime);
@@ -35,17 +37,18 @@ int DataNode::addEmptyFile(string name, time_t mtime, time_t atime, time_t ctime
     return 0;
 }
 
-int DataNode::addNewFile(string name, const unsigned char *content, int size, time_t mtime, time_t atime, time_t ctime)
+int DataNode::addNewFile(string name, const char *content, long long size, time_t mtime, time_t atime, time_t ctime)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it != this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN already have file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN already has file named " << name << endl;
         return -1;
     }
     INodeFile new_file(name, mtime, atime, ctime);
     new_file.write(content, size);
     this->names.push_back(new_file);
+    this->used_size += size;
     return 0;
 }
 
@@ -54,9 +57,11 @@ int DataNode::delFile(string name)
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it == this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN already have file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN already has file named " << name << endl;
         return -1;
     }
+    this->used_size -= (*it).getSize();
+    (*it).removeFile();
     this->names.erase(it);
     return 0;
 }
@@ -66,38 +71,62 @@ int DataNode::delDir(string prefix) {
     return -1;
 }
 
-int DataNode::getFileSize(string name)
+long long DataNode::getFileSize(string name)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it == this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN have no file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN has no file named " << name << endl;
         return -1;
     }
     return (*it).getSize();
 }
 
-int DataNode::writeToFile(string name, const unsigned char *content, int size)
+int DataNode::writeToFile(string name, const char *content, long long size)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it == this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN have no file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN has no file named " << name << endl;
         return -1;
     }
     (*it).write(content, size);
+    this->used_size += size;
     return 0;
 }
 
-int DataNode::readFromFile(string name, unsigned char *buffer, int size)
+int DataNode::readFromFile(string name, char * buffer, long long size)
 {
     vector<INodeFile>::iterator it = findFile(this->names, name);
     if (it == this->names.end())
     {
-        FILE_LOG(LOG_ERROR) << "FSNDN have no file named " << name << endl;
+        FILE_LOG(LOG_ERROR) << "FSNDN has no file named " << name << endl;
         return -1;
     }
     (*it).read(buffer, size);
+    return 0;
+}
+
+int DataNode::addFileSeg(string name, const char *content, int size, int seg)
+{
+    vector<INodeFile>::iterator it = findFile(this->names, name);
+    if (it == this->names.end()) {
+        FILE_LOG(LOG_ERROR)<< "FSNDN has no file named "<< name<< endl;
+        return -1;
+    }
+    (*it).insertSeg(content, size, seg);
+    this->used_size += size;
+    return 0;
+}
+
+int DataNode::getFileSeg(string name, char *buffer, int size, int seg)
+{
+    vector<INodeFile>::iterator it = findFile(this->names, name);
+    if (it == this->names.end()) {
+        FILE_LOG(LOG_ERROR)<< "FSNDN has no file named"<< name<< endl;
+        return -1;
+    }
+    (*it).readSeg(buffer, size, seg);
     return 0;
 }
 
@@ -127,5 +156,15 @@ vector<string> DataNode::showAllChildren()
         children_name.push_back(temp.getNdnName().toUri());
     }
     return children_name;
+}
+
+long long DataNode::getNodeSize()
+{
+    return this->node_size;
+}
+
+long long DataNode::getSpaceSize()
+{
+    return this->node_size - this->used_size;
 }
 

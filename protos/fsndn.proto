@@ -12,11 +12,14 @@ service DataNodeSer {
   rpc AddNewFile (AddNewFileRequest) returns (IntReply) {};
   rpc DelFile (FileNameRequest) returns (IntReply) {};
   rpc DelDir (PrefixRequest) returns (IntReply) {};
-  rpc GetFileSize (FileNameRequest) returns (IntReply) {};
+  rpc GetFileSize (FileNameRequest) returns (LongReply) {};
   rpc WriteToFile (WriteRequest) returns (IntReply) {};
   rpc ReadFromFile (ReadRequest) returns (ReadReply) {};
+  rpc AddFileSeg (AddFileSegRequest) returns (IntReply) {};
+  rpc GetFileSeg (GetFileSegRequest) returns (ReadReply){};
   rpc GetChildren (PrefixRequest) returns (ChildrenReply) {};
   rpc GetAllChildren (EmptyRequest) returns (ChildrenReply) {};
+  rpc GetSpaceSize (EmptyRequest) returns (LongReply) {};
 }
 
 // The Request message containing the user's name.
@@ -30,7 +33,7 @@ message AddEmptyFileRequest {
 message AddNewFileRequest {
     string name = 1;
     bytes content = 2;
-    int32 size = 3;
+    int64 size = 3;
     fixed64 mtime = 4;
     fixed64 atime = 5;
     fixed64 ctime = 6;
@@ -46,22 +49,38 @@ message PrefixRequest {
 
 message ReadRequest {
     string name = 1;
-    int32 size = 2;
+    int64 size = 2;
 }
 
 message WriteRequest {
     string name = 1;
     bytes content = 2;
+    int64 size = 3;
+}
+
+message AddFileSegRequest {
+    string name = 1;
+    bytes content = 2;
     int32 size = 3;
+    int32 seg = 4;
+}
+
+message GetFileSegRequest {
+    string name = 1;
+    int32 size = 2;
+    int32 seg = 3;
 }
 
 message EmptyRequest {
-
 }
 
 // The response message containing the greetings
 message IntReply {
     sint32 result = 1;
+}
+
+message LongReply {
+    int64 result = 1;
 }
 
 message ReadReply {
