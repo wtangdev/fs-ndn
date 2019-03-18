@@ -78,7 +78,7 @@ int FileBlock::write(const char *content, int size) {
     fout.seekp(offset);
     this->offset = offset;
     FILE_LOG(LOG_DEBUG)<< this->path<<"  "<< offset<< endl;
-    fout.write(reinterpret_cast<const char *>(content), sizeof(char) * size);
+    fout.write(content, sizeof(char) * size);
     fout.close();
     return 0;
 }
@@ -95,7 +95,7 @@ int FileBlock::read(char *buffer, int size) {
         fin.seekg(this->offset);
 //        char *data = new char(size);
 //        memset(data, 0, size);
-        fin.read(reinterpret_cast<char *>(buffer), sizeof(char) * size);    // 读
+        fin.read(buffer, sizeof(char) * size);    // 读
         fin.close();
 //        cout<< this->path<< " "<< size<<" "<< file_size<< " "<< this->offset<< endl<< buffer<< endl;
     }

@@ -59,7 +59,7 @@ int main(int argc, char ** argv) {
         fout.write(md_content, md_size*sizeof(char));
         fout.flush();
         fout.close();
-            delete[] md_content;
+        delete[] md_content;
         cout<< 1<< endl;
     } catch (std::exception& e) {
         cout<< e.what()<< endl;
