@@ -141,10 +141,6 @@ int DataNodeClient::addFileSeg(string name, const char * content, int size, int 
     IntReply reply;
     ClientContext context;
     Status status = stub_->AddFileSeg(&context, request, & reply);
-    StoreSeg ss;
-    ss.seg = seg;
-    ss.size = size;
-    this->store_segs.push_back(ss);
     if (!status.ok()) {
         FILE_LOG(LOG_ERROR) << status.error_code()<< " : "<< status.error_message()<< endl;
         return -1;

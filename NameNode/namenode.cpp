@@ -70,7 +70,12 @@ int NameNode::addNewFile(string name, const char *content, long long size)
         }
         this->nodes.back().addNewFile(name, content, size, time(&time1), time(&time1), time(&time1));
         FileMeta new_file(name, 1, size);
-        new_file.addUseNodes(this->nodes.back().getNodeId());
+        int seg_insert = 0;
+        int nodeid_insert = this->nodes.back().getNodeId();
+        for (; (seg_insert+1)*seg_size <= size; seg_insert++) {
+            new_file.addUseNodes(nodeid_insert, seg_insert, seg_size);
+        }
+        new_file.addUseNodes(nodeid_insert, seg_insert, size - (seg_insert*seg_size));
         this->files.push_back(new_file);
         this->updateNodes();
         return 0;
@@ -84,16 +89,16 @@ int NameNode::addNewFile(string name, const char *content, long long size)
         memmove(temp_content, content+(seg*seg_size), seg_size);
         if (seg < nodes_count) {
             this->nodes[seg].addEmptyFile(name, time(&time1), time(&time1), time(&time1));
-            new_file.addUseNodes(this->nodes[seg].getNodeId());
         }
         this->nodes[seg%nodes_count].addFileSeg(name, temp_content, seg_size, seg);
+        new_file.addUseNodes(this->nodes[seg%nodes_count].getNodeId(), seg, seg_size);
         seg++;
     }
     // 把最后一点放进去
     memset(temp_content, 0, seg_size);
     memmove(temp_content, content+(seg*seg_size), size-(seg*seg_size));
-    this->nodes[seg%nodes_count].addFileSeg(name, temp_content, seg_size, seg);
-    new_file.addUseNodes(this->nodes[seg%nodes_count].getNodeId());
+    this->nodes[seg%nodes_count].addFileSeg(name, temp_content, size - (seg*seg_size), seg);
+    new_file.addUseNodes(this->nodes[seg%nodes_count].getNodeId(), seg, size - (seg *seg_size));
     new_file.setSegs(seg);
     this->files.push_back(new_file);
     this->updateNodes();
@@ -113,20 +118,31 @@ int NameNode::readFile(string name, char * buffer, long long size)
         return -1;
     }
     int segs = (*it).getSegs();
-    for (auto node : this->nodes) {
-        if ((*it).getUseNodes().find(node.getNodeId()) != (*it).getUseNodes().end()) {
-            if (node.store_segs.size() == 0) {
-                node.readFromFile(name, buffer, size);
-            } else {
-                for (auto file_seg : node.store_segs) {
-                    int temp_seg = file_seg.seg;
-                    int temp_size = file_seg.size;
-                    char * temp_content = new char[temp_size];
-                    node.getFileSeg(name, temp_content, temp_size, temp_seg);
-                    memcpy(buffer+seg_size * temp_seg, temp_content, temp_size);
-                    delete [] temp_content;
-                }
-            }
+    //    for (auto node : this->nodes) {
+    //        if ((*it).getUseNodes().find(node.getNodeId()) != (*it).getUseNodes().end()) {
+    ////                node.readFromFile(name, buffer, size);
+    //                for (auto file_seg : node.store_segs) {
+    //                    int temp_seg = file_seg.seg;
+    //                    int temp_size = file_seg.size;
+    //                    char * temp_content = new char[temp_size];
+    //                    node.getFileSeg(name, temp_content, temp_size, temp_seg);
+    //                    memcpy(buffer+seg_size * temp_seg, temp_content, temp_size);
+    //                    delete [] temp_content;
+    //                }
+    //            }
+    //        }
+    //    }
+    // TODO: 优化！！！！
+    for (auto ss : (*it).getUseNodes()) {
+        int nodeid = ss.node;
+        vector<DataNodeClient>::iterator node = find(this->nodes.begin(), this->nodes.end(), nodeid);
+        for (auto segs : ss.segs) {
+            int seg_read = segs.seg;
+            int size_read = segs.size;
+            char * temp_content = new char[size_read];
+            (*node).getFileSeg(name, temp_content, size_read, seg_read);
+            memcpy(buffer+seg_size * seg_read, temp_content, size_read);
+            delete [] temp_content;
         }
     }
     cout<< (void *)buffer<< endl;

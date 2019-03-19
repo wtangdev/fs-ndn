@@ -31,7 +31,7 @@ int FileMeta::getReadTimes()
     return read_times;
 }
 
-set<int> FileMeta::getUseNodes()
+vector<StoreSeg> FileMeta::getUseNodes()
 {
     return this->use_nodes;
 }
@@ -48,9 +48,28 @@ int FileMeta::addReadTimes()
     return 0;
 }
 
-int FileMeta::addUseNodes(int node)
+int FileMeta::addUseNodes(int node, int seg, int size)
 {
-    this->use_nodes.insert(node);
+    vector<StoreSeg>::iterator it;
+    for (it = this->use_nodes.begin(); it != this->use_nodes.end(); it++) {
+        if ((*it).node == node) {
+            break;
+        }
+    }
+    if (it == this->use_nodes.end()) {
+        StoreSeg ss;
+        ss.node = node;
+        SegSize segsize;
+        segsize.seg = seg;
+        segsize.size = size;
+        ss.segs.push_back(segsize);
+        this->use_nodes.push_back(ss);
+    } else {
+        SegSize segsize;
+        segsize.seg = seg;
+        segsize.size = size;
+        (*it).segs.push_back(segsize);
+    }
     return 0;
 }
 
@@ -62,7 +81,7 @@ int FileMeta::minusReadTimes()
 
 int FileMeta::minusUseNodes(int node)
 {
-    set<int>::iterator it = find(this->use_nodes.begin(), this->use_nodes.end(),
+    vector<StoreSeg>::iterator it = find(this->use_nodes.begin(), this->use_nodes.end(),
                                     node);
     if (it == use_nodes.end()) {
         FILE_LOG(LOG_ERROR)<< "Minus Use Nodes error, "<< this->name.toUri()<<" has no segment in node "<< node<< endl;

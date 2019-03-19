@@ -24,11 +24,6 @@ using fsndnproto::ChildrenReply;
 using fsndnproto::DataNodeSer;
 using fsndnproto::LongReply;
 
-struct StoreSeg{
-    int seg;
-    int size;
-};
-
 class DataNodeClient {
 public:
     DataNodeClient(shared_ptr<Channel> channel, int node_id);
@@ -53,7 +48,6 @@ public:
     bool operator== (const int & other_node_id) const;
     bool operator< (const DataNodeClient & other_node) const;
 
-    vector<StoreSeg> store_segs;
 private:
     std::shared_ptr<DataNodeSer::Stub> stub_;
     int node_id;
