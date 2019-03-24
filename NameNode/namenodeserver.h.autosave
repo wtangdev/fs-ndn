@@ -1,0 +1,13 @@
+#ifndef NAMENODESERVER_H
+#define NAMENODESERVER_H
+
+#include 
+
+
+class NameNodeServer
+{
+public:
+    NameNodeServer();
+};
+
+#endif // NAMENODESERVER_H

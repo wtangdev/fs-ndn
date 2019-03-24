@@ -1,0 +1,1 @@
+--style=allman / --style=bsd / --style=break / -A1--indent-namespaces / -N--indent-after-parens / -xU--indent-preproc-block / -xW--indent-col1-comments / -Y--pad-oper / -p--pad-header / -H--align-pointer=type   / -k1--add-braces / -j--close-templates / -xy--mode=c--delete-empty-lines / -xe

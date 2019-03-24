@@ -7,14 +7,78 @@ package namenodeproto;
 // The NameNode service definition.
 service NameNodeSer {
   // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {};
+  rpc AddNewFile (AddNewFileRequest) returns (SegIndexReply) {};
+  rpc DelFile (FileNameRequest) returns (IntReply) {};
+  rpc DelDir (PrefixRequest) returns (IntReply) {};
+  rpc GetFileSize (FileNameRequest) returns (LongReply) {};
+  rpc ReadFromFile (ReadRequest) returns (SegIndexReply) {};
+  rpc AddDataNode (AddDataNodeRequst) returns (IntReply) {};
+  rpc RemDataNode (RemDataNodeRequst) returns (IntReply) {};
 }
 
 // The Request message containing the user's name.
-message HelloRequest {
-  string hello = 1;
+message AddNewFileRequest {
+  string name = 1;
+  int64 size = 2;
+  fixed64 mtime = 3;
+  fixed64 atime = 4;
+  fixed64 ctime = 5;
 }
+
+message FileNameRequest {
+  string name = 1;
+}
+
+message PrefixRequest {
+  string prefix = 1;
+}
+
+message ReadRequest {
+  string name = 1;
+  int64 size = 2;
+}
+
+message WriteRequest {
+  string name = 1;
+  bytes content = 2;
+  int64 size = 3;
+}
+
+message AddDataNodeRequst {
+  string ip = 1;
+  int32 node = 2;
+}
+
+message RemDataNodeRequst {
+  int32 node = 1;
+}
+
+message EmptyRequest {
+}
+
 // The response message containing the greetings
-message HelloReply {
-  string reply = 1;
+message IntReply {
+  sint32 result = 1;
+}
+
+message LongReply {
+  int64 result = 1;
+}
+
+message ReadReply {
+  bytes buffer = 1;
+}
+
+message SegWithSize {
+  int32 seg = 1;
+  int32 size = 2;
+}
+
+message SegIndex {
+  int32 node = 1;
+  repeated SegWithSize segs = 2;
+}
+
+message SegIndexReply {
+  repeated SegIndex index = 1;
 }

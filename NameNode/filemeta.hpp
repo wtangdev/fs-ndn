@@ -7,28 +7,33 @@
 
 using namespace std;
 
-struct SegSize
-    {
-        int seg;
-        int size;
-    };
-
-struct StoreSeg {
-    int node;
-    vector<SegSize> segs;
-    bool operator ==(const int & other_seg) const {
-        return node == other_seg;
-    }
+struct SegWithSize
+{
+    int seg;
+    int size;
 };
 
-class FileMeta {
-public:
-    FileMeta(string name, int segs, int size);
+struct SegIndex
+{
+    int node;
+    vector<SegWithSize> segs;
+    bool operator==(const int& other_seg) const { return node == other_seg; }
+};
+
+class FileMeta
+{
+  public:
+    FileMeta(string name,
+             int segs,
+             long long size,
+             time_t mtime,
+             time_t atime,
+             time_t ctime);
     ndn::Name getName();
     int getSegs();
     long long getSize();
     int getReadTimes();
-    vector<StoreSeg> getUseNodes();
+    vector<SegIndex> getUseNodes();
 
     int setSegs(int segs);
     int addReadTimes();
@@ -36,15 +41,17 @@ public:
     int minusReadTimes();
     int minusUseNodes(int node);
 
-    bool operator ==(const string & other_file_name) const;
-private:
+    bool operator==(const string& other_file_name) const;
+
+  private:
     ndn::Name name;
-    vector<StoreSeg> use_nodes;
+    vector<SegIndex> use_nodes;
     int segs;
     long long size;
     int read_times;
+    time_t mtime;
+    time_t atime;
+    time_t ctime;
 };
-
-
 
 #endif // FILEMETA_HPP

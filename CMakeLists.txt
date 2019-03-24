@@ -22,8 +22,9 @@ file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
 include_directories(${PROTO_SRC_DIR})
 
 # for fsndn
-set(FS_FILES fs.cpp DataNode/datanode_server.cpp DataNode/datanode_server.hpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
-set(NAMENODE_TEST_FILES namenode_test.cpp DataNode/datanode_server.cpp DataNode/datanode_server.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanode_client.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(FS_FILES fs.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(NAMENODE_TEST_FILES namenode_test.cpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(NAME_FILES name.cpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
 # add_executable(fs ${SOURCE_FILES})
 
 include_directories(/usr/local/include)
@@ -81,6 +82,20 @@ add_executable(namenode_test
     ${NAMENODE_TEST_FILES}
 )
 target_link_libraries(namenode_test
+    gRPC::grpc++_reflection
+    protobuf::libprotobuf
+    ${NDN_LIBRARY}
+    ${CONFIG++_LIBRARY}
+)
+
+# Building client
+add_executable(name
+    ${CMAKE_CURRENT_SOURCE_DIR}/name.cpp
+    ${PROTO_SRCS}
+    ${GRPC_SRCS}
+    ${NAME_FILES}
+)
+target_link_libraries(name
     gRPC::grpc++_reflection
     protobuf::libprotobuf
     ${NDN_LIBRARY}

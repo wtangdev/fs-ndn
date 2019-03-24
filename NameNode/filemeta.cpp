@@ -1,71 +1,87 @@
 #include "filemeta.hpp"
-#include "iostream"
 #include "../logger.hpp"
+#include "iostream"
 using namespace std;
 
-FileMeta::FileMeta(string name, int segs, int size)
+FileMeta::FileMeta(string name,
+                   int segs,
+                   long long size,
+                   time_t mtime,
+                   time_t atime,
+                   time_t ctime)
 {
     this->name = ndn::Name(name);
     this->segs = segs;
     this->size = size;
     this->read_times = 0;
+    this->mtime = mtime;
+    this->atime = atime;
+    this->ctime = ctime;
 }
 
-ndn::Name FileMeta::getName()
+ndn::Name
+FileMeta::getName()
 {
     return this->name;
 }
 
-int FileMeta::getSegs()
+int
+FileMeta::getSegs()
 {
     return this->segs;
 }
 
-long long FileMeta::getSize()
+long long
+FileMeta::getSize()
 {
     return this->size;
 }
 
-int FileMeta::getReadTimes()
+int
+FileMeta::getReadTimes()
 {
     return read_times;
 }
 
-vector<StoreSeg> FileMeta::getUseNodes()
+vector<SegIndex>
+FileMeta::getUseNodes()
 {
     return this->use_nodes;
 }
 
-int FileMeta::setSegs(int segs)
+int
+FileMeta::setSegs(int segs)
 {
     this->segs = segs;
     return 0;
 }
 
-int FileMeta::addReadTimes()
+int
+FileMeta::addReadTimes()
 {
     this->read_times++;
     return 0;
 }
 
-int FileMeta::addUseNodes(int node, int seg, int size)
+int
+FileMeta::addUseNodes(int node, int seg, int size)
 {
-    vector<StoreSeg>::iterator it;
+    vector<SegIndex>::iterator it;
     for (it = this->use_nodes.begin(); it != this->use_nodes.end(); it++) {
         if ((*it).node == node) {
             break;
         }
     }
     if (it == this->use_nodes.end()) {
-        StoreSeg ss;
+        SegIndex ss;
         ss.node = node;
-        SegSize segsize;
+        SegWithSize segsize;
         segsize.seg = seg;
         segsize.size = size;
         ss.segs.push_back(segsize);
         this->use_nodes.push_back(ss);
     } else {
-        SegSize segsize;
+        SegWithSize segsize;
         segsize.seg = seg;
         segsize.size = size;
         (*it).segs.push_back(segsize);
@@ -73,25 +89,29 @@ int FileMeta::addUseNodes(int node, int seg, int size)
     return 0;
 }
 
-int FileMeta::minusReadTimes()
+int
+FileMeta::minusReadTimes()
 {
     this->read_times--;
     return 0;
 }
 
-int FileMeta::minusUseNodes(int node)
+int
+FileMeta::minusUseNodes(int node)
 {
-    vector<StoreSeg>::iterator it = find(this->use_nodes.begin(), this->use_nodes.end(),
-                                    node);
+    vector<SegIndex>::iterator it =
+      find(this->use_nodes.begin(), this->use_nodes.end(), node);
     if (it == use_nodes.end()) {
-        FILE_LOG(LOG_ERROR)<< "Minus Use Nodes error, "<< this->name.toUri()<<" has no segment in node "<< node<< endl;
+        FILE_LOG(LOG_ERROR) << "Minus Use Nodes error, " << this->name.toUri()
+                            << " has no segment in node " << node << endl;
         return -1;
     }
     this->use_nodes.erase(it);
     return 0;
 }
 
-bool FileMeta::operator== (const string &other_file_name) const
+bool
+FileMeta::operator==(const string& other_file_name) const
 {
     return this->name.toUri() == other_file_name;
 }

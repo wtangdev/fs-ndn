@@ -5,34 +5,34 @@
 #ifndef FS_NDN_INODEFILE_HPP
 #define FS_NDN_INODEFILE_HPP
 
-#include "inode.hpp"
 #include "fileblock.hpp"
+#include "inode.hpp"
 
-class INodeFile : public INode{
-public:
+class INodeFile : public INode
+{
+  public:
     bool isNULL();
     bool isRoot();
     bool isDirectory();
 
     long long getSize();
-    
-    int write(const char * content, long long size);
-    int read(char * buffer, long long size);
 
-    int insertSeg(const char * content, int size, int seg);
-    int readSeg(char * buffer, int size, int seg);
+    int write(const char* content, long long size);
+    int read(char* buffer, long long size);
+
+    int insertSeg(const char* content, int size, int seg);
+    int readSeg(char* buffer, int size, int seg);
 
     int removeFile();
 
     INodeFile();
     INodeFile(string name, time_t mtime, time_t atime, time_t ctime);
-    INodeFile(INodeFile * other);
-//    ~INodeFile();
+    INodeFile(INode* other);
+    //    ~INodeFile();
 
-private:
+  private:
     vector<FileBlock> fileblocks;
     long long size;
 };
 
-
-#endif //FS_NDN_INODEFILE_HPP
+#endif // FS_NDN_INODEFILE_HPP
