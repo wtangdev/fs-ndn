@@ -99,8 +99,12 @@ FileMeta::minusReadTimes()
 int
 FileMeta::minusUseNodes(int node)
 {
-    vector<SegIndex>::iterator it =
-      find(this->use_nodes.begin(), this->use_nodes.end(), node);
+    vector<SegIndex>::iterator it;
+    for (it = this->use_nodes.begin(); it != this->use_nodes.end(); it++) {
+        if ((*it).node == node) {
+            break;
+        }
+    }
     if (it == use_nodes.end()) {
         FILE_LOG(LOG_ERROR) << "Minus Use Nodes error, " << this->name.toUri()
                             << " has no segment in node " << node << endl;

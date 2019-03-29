@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.2)
 
 add_compile_options(-std=c++11)
 
+
 # GRPC and Protocol Buffers libraries location
-list(APPEND CMAKE_PREFIX_PATH "/Users/anson/Documents/Lib/grpc" "/Users/anson/Documents/Lib/grp/third_party/cprotobuf")
+list(APPEND CMAKE_PREFIX_PATH "/home/anson/Documents/Lib/grpc" "/home/anson/Documents/Lib/grp/third_party/cprotobuf")
 
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -32,7 +33,6 @@ include_directories(/usr/local/include)
 find_library(NDN_LIBRARY ndn-cpp /usr/local/lib)
 
 # for libconfig
-
 FIND_PATH(CONFIG++_INCLUDE_DIR libconfig.h++ /usr/include /usr/local/include)
 
 FIND_LIBRARY(CONFIG++_LIBRARY NAMES config++ PATH /usr/lib /usr/local/lib)

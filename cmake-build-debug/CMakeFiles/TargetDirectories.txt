@@ -1,0 +1,5 @@
+/home/anson/Documents/Code/fs-ndn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/anson/Documents/Code/fs-ndn/cmake-build-debug/CMakeFiles/namenode_test.dir
+/home/anson/Documents/Code/fs-ndn/cmake-build-debug/CMakeFiles/fs.dir
+/home/anson/Documents/Code/fs-ndn/cmake-build-debug/CMakeFiles/name.dir
+/home/anson/Documents/Code/fs-ndn/cmake-build-debug/CMakeFiles/edit_cache.dir

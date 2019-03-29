@@ -22,7 +22,7 @@ main(int argc, char** argv)
     client.addDataNode("localhost:50051", 1001);
     client.addDataNode("localhost:50052", 1002);
     cout << "HelloWorld!";
-    ifstream fin("/Users/anson/Desktop/psb.jpeg", ios::binary | ios::in);
+    ifstream fin("/home/anson/Desktop/psb.png", ios::binary | ios::in);
     //    ifstream fin("/Users/anson/Desktop/jpjh原.md", ios::binary | ios::in);
     if (!fin) {
         cout << "File open failed\n";
@@ -42,7 +42,7 @@ main(int argc, char** argv)
           "/c1/c2", data, file_size, time(&time1), time(&time1), time(&time1));
         char* buffer = new char[file_size];
         client.readFile("/c1/c2", buffer, file_size);
-        ofstream fout("/Users/anson/Desktop/new.jpeg", ios::binary);
+        ofstream fout("/home/anson/Desktop/new.png", ios::binary);
         fout.write(buffer, file_size);
         fout.close();
     }

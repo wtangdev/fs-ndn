@@ -6,6 +6,8 @@
 #define FS_NDN_FILEBLOCK_HPP
 
 #include "iostream"
+#include "vector"
+
 using namespace std;
 
 class SFileTable {
@@ -13,12 +15,16 @@ public:
     SFileTable(string pathstr, int offset);
 
     string getPath();
+
     int getSpace();
+
     int getOffset();
+
     void setOffset(int ofs);
 
-    bool operator<(const SFileTable & otherfile) const;
-    bool operator==(const SFileTable & otherfile) const;
+    bool operator<(const SFileTable &otherfile) const;
+
+    bool operator==(const SFileTable &otherfile) const;
 
 
 private:
@@ -33,18 +39,24 @@ class FileBlock {
 public:
     static vector<SFileTable> space_path;
 
-    FileBlock(string name, const char * data, int size ,int seg);
-    FileBlock(FileBlock * other);
+    FileBlock(string name, const char *data, int size, int seg);
+
+    FileBlock(FileBlock *other);
 
     int getSeg();
+
     int getSize();
 
-    int read(char * buffer, int size);
-    int write(const char * content, int size);
+    int read(char *buffer, int size);
+
+    int write(const char *content, int size);
+
     vector<SFileTable> getSpaceTable();
+
     static void updateSpaceTable(string path, int size);
 
-    bool operator<(const FileBlock & otherfile) const;
+    bool operator<(const FileBlock &otherfile) const;
+
 private:
     string path;
     string name;    // 文件名，用来生成唯一的路径
@@ -53,7 +65,6 @@ private:
     int seg;    // 文件的第几段
 
 };
-
 
 
 #endif //FS_NDN_FILEBLOCK_HPP

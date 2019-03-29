@@ -24,7 +24,8 @@ FileBlock::FileBlock(FileBlock *other) {
     this->path = other->path;
 }
 
-int FileBlock::write(const char *content, int size) {
+int
+FileBlock::write(const char *content, int size) {
     bool need_new_file = true;
     int offset = 0;
     // 判断size是否需要新建一个fsndn文件来存储
@@ -52,19 +53,19 @@ int FileBlock::write(const char *content, int size) {
 //        pathstream1 << fsndnid;
 //        pathstream2 << time_stamp;
         stringstream pathstream;
-        pathstream<< "_seg"<< this->seg;
+        pathstream << "_seg" << this->seg;
         string root_path = fsndn::root_path;
         string name_path;
         name2path(this->name, name_path);
         this->path = root_path.append(name_path.append(pathstream.str()).append(".fsndn"));
         // 新建文件
-        FILE_LOG(LOG_DEBUG)<< "Write: "<< this->path<< endl;
+        FILE_LOG(LOG_DEBUG) << "Write: " << this->path << endl;
         ofstream creat_file(this->path);
-        FILE_LOG(LOG_DEBUG)<< "write : create new file is ok"<< endl;
+        FILE_LOG(LOG_DEBUG) << "write : create new file is ok" << endl;
         creat_file.close();
         // 判断新建的文件是否有剩余空间，有的话则插入空闲文件表
         if (size < fsndn::seg_size) {
-            SFileTable newsfiletable(this->path, size+1);
+            SFileTable newsfiletable(this->path, size + 1);
             FileBlock::space_path.push_back(newsfiletable);
         }
     }
@@ -77,13 +78,14 @@ int FileBlock::write(const char *content, int size) {
     // 移动偏移量,如果是新建的文件，偏移量就会是0
     fout.seekp(offset);
     this->offset = offset;
-    FILE_LOG(LOG_DEBUG)<< this->path<<"  "<< offset<< endl;
+    FILE_LOG(LOG_DEBUG) << this->path << "  " << offset << endl;
     fout.write(content, sizeof(char) * size);
     fout.close();
     return 0;
 }
 
-int FileBlock::read(char *buffer, int size) {
+int
+FileBlock::read(char *buffer, int size) {
     ifstream fin(this->path, ios::binary);
     if (!fin) {
         FILE_LOG(LOG_DEBUG) << "FileBlock read :File open failed\n";
@@ -102,19 +104,23 @@ int FileBlock::read(char *buffer, int size) {
     return 0;
 }
 
-bool FileBlock::operator<(const FileBlock &otherfile) const {
+bool
+FileBlock::operator<(const FileBlock &otherfile) const {
     return this->seg < otherfile.seg;
 }
 
-vector<SFileTable> FileBlock::getSpaceTable() {
+vector<SFileTable>
+FileBlock::getSpaceTable() {
     return FileBlock::space_path;
 }
 
-void FileBlock::updateSpaceTable(string path, int size) {
-    for (vector<SFileTable>::iterator i = FileBlock::space_path.begin(); i != FileBlock::space_path.end(); i++) {
+void
+FileBlock::updateSpaceTable(string path, int size) {
+    for (vector<SFileTable>::iterator i = FileBlock::space_path.begin();
+         i != FileBlock::space_path.end(); i++) {
         if ((*i).getPath() == path) {
             (*i).setOffset((*i).getOffset() + size + 1);
-            cout<< "   "<< (*i).getSpace()<< endl;
+            cout << "   " << (*i).getSpace() << endl;
             if ((*i).getSpace() <= 0) {
                 // 没有空闲空间了就删掉
                 FileBlock::space_path.erase(i);
@@ -126,11 +132,13 @@ void FileBlock::updateSpaceTable(string path, int size) {
     sort(FileBlock::space_path.begin(), FileBlock::space_path.end());
 }
 
-int FileBlock::getSeg() {
+int
+FileBlock::getSeg() {
     return this->seg;
 }
 
-int FileBlock::getSize() {
+int
+FileBlock::getSize() {
     return this->size;
 }
 
@@ -140,27 +148,33 @@ SFileTable::SFileTable(string pathstr, int offset) {
     this->space = fsndn::seg_size - this->offset;
 }
 
-string SFileTable::getPath() {
+string
+SFileTable::getPath() {
     return this->path;
 }
 
-int SFileTable::getSpace() {
+int
+SFileTable::getSpace() {
     return this->space;
 }
 
-void SFileTable::setOffset(int ofs) {
+void
+SFileTable::setOffset(int ofs) {
     this->offset = ofs;
     this->space = fsndn::seg_size - ofs;
 }
 
-int SFileTable::getOffset() {
+int
+SFileTable::getOffset() {
     return this->offset;
 }
 
-bool SFileTable::operator<(const SFileTable &otherfile) const {
+bool
+SFileTable::operator<(const SFileTable &otherfile) const {
     return this->space < otherfile.space;
 };
 
-bool SFileTable::operator==(const SFileTable &otherfile) const {
+bool
+SFileTable::operator==(const SFileTable &otherfile) const {
     return this->path == otherfile.path;
 }

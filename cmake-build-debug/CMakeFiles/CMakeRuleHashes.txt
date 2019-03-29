@@ -1,0 +1,5 @@
+# Hashes of file build rules.
+c745d520d92a36071ad0cb90bb012ffe ../proto-src/fsndn.grpc.pb.cc
+b2cd1d81726cf49f6361c24ed06d4ee7 ../proto-src/fsndn.pb.cc
+5687f825b3d59c929f9e73c9491782d1 ../proto-src/namenode.grpc.pb.cc
+6eba67be05881b72bd124b9781ce56a9 ../proto-src/namenode.pb.cc
