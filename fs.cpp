@@ -22,7 +22,7 @@ int fsndn::group_id;
 int fsndn::fsndn_id = 666;
 string fsndn::root_path;
 string fsndn::global_prefix;
-int fsndn::seg_size = seg_size;
+const int fsndn::seg_size = 1048576; //
 
 int main() {
     cout<< "FS-NDN: version 0.1"<< endl;
@@ -33,14 +33,14 @@ int main() {
     string addr = cfg.lookup("server.addr");
     cfg.lookupValue("server.root_path", fsndn::root_path);
     cfg.lookupValue("server.global_prefix", fsndn::global_prefix);
-    cfg.lookupValue("server.seg_size", fsndn::seg_size);
+//    cfg.lookupValue("server.seg_size", fsndn::seg_size);
 
     cout<< "FS-NDN: prefix " << fsndn::global_prefix<< endl;
     cout<< "FS-NDN: root path "<< fsndn::root_path<< endl;
     Log<Output2FILE>::reportingLevel() = LOG_DEBUG;
     Output2FILE::stream() = stdout;
 
-    DataNodeSerImpl service(1024*1024*1024);
+    DataNodeSerImpl service((long long) 1024*1024*1024*10);
     string server_address(addr);
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

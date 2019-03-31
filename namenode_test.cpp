@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const int fsndn::seg_size = 1048576; //
+
 int
 main(int argc, char** argv)
 {
@@ -22,18 +24,24 @@ main(int argc, char** argv)
     client.addDataNode("localhost:50051", 1001);
     client.addDataNode("localhost:50052", 1002);
     cout << "HelloWorld!";
-    ifstream fin("/home/anson/Desktop/psb.png", ios::binary | ios::in);
+
+    string file_path = "/home/anson/Desktop/manjaro.iso";
+    client.addNewFile("/c1/c2", file_path, time(&time1), time(&time1), time(&time1));
+    client.readFile("/c1/c2","/home/anson/Desktop/newmanjaro.iso");
+    /*
+//    ifstream fin("/home/anson/Desktop/ustc.jpg", ios::binary | ios::in);
+    ifstream fin("/home/anson/Desktop/manjaro.iso", ios::binary | ios::in);
     //    ifstream fin("/Users/anson/Desktop/jpjh原.md", ios::binary | ios::in);
     if (!fin) {
         cout << "File open failed\n";
     } else {
-        //            记录当前位置
+        // 记录当前位置
         long long current_pos = fin.tellg();
         fin.seekg(0, ios_base::end); // 移动到末尾
         //        istream::pos_type file_size = fin.tellg();  //
-        //此时的位置显然就是文件大小
+        // 此时的位置显然就是文件大小
         long long file_size = fin.tellg();
-        fin.seekg(current_pos); //回到初始位置
+        fin.seekg(current_pos); // 回到初始位置
         FILE_LOG(LOG_DEBUG) << "file_size=" << file_size << endl;
         char* data = new char[file_size];
         fin.read(data, file_size);
@@ -42,9 +50,13 @@ main(int argc, char** argv)
           "/c1/c2", data, file_size, time(&time1), time(&time1), time(&time1));
         char* buffer = new char[file_size];
         client.readFile("/c1/c2", buffer, file_size);
-        ofstream fout("/home/anson/Desktop/new.png", ios::binary);
+        ofstream fout("/home/anson/Desktop/newmanjaro.iso", ios::binary);
         fout.write(buffer, file_size);
         fout.close();
     }
+
+     */
+
+
     return 0;
 }

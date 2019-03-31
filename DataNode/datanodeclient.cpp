@@ -10,7 +10,6 @@ int fsndn::group_id;
 int fsndn::fsndn_id = 666;
 string fsndn::root_path = "/tmp/fsndn";
 string fsndn::global_prefix = "/ndn/fsndn/prefix";
-int fsndn::seg_size = 2048;
 
 DataNodeClient::DataNodeClient(shared_ptr<Channel> channel, int node_id)
   : stub_(DataNodeSer::NewStub(channel))

@@ -28,7 +28,7 @@ namespace fsndn {
 
     extern const int version_type;
     extern const int segment_type;
-    extern int seg_size;
+    extern const int seg_size;
     extern const int seg_size_shift;
     extern const int default_files_per_directory;
 

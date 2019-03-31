@@ -1,0 +1,390 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 43515904 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2753), pid=42261, tid=0x00007f2b2c37f700
+#
+# JRE version:  (8.0_202-b39) (build )
+# Java VM: OpenJDK 64-Bit Server VM (25.202-b39 mixed mode linux-amd64 compressed oops)
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f2b2400b000):  JavaThread "Unknown thread" [_thread_in_vm, id=42262, stack(0x00007f2b2c280000,0x00007f2b2c380000)]
+
+Stack: [0x00007f2b2c280000,0x00007f2b2c380000],  sp=0x00007f2b2c37e3e0,  free space=1016k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0xa4458e]  VMError::report_and_die()+0x14e
+V  [libjvm.so+0x4dfff9]  report_vm_out_of_memory(char const*, int, unsigned long, VMErrorType, char const*)+0x99
+V  [libjvm.so+0x8b4313]  os::Linux::commit_memory_impl(char*, unsigned long, bool)+0x113
+V  [libjvm.so+0x8b4539]  os::pd_commit_memory(char*, unsigned long, unsigned long, bool)+0x29
+V  [libjvm.so+0x8a95ca]  os::commit_memory(char*, unsigned long, unsigned long, bool)+0x2a
+V  [libjvm.so+0x91906b]  PSVirtualSpace::expand_by(unsigned long)+0x6b
+V  [libjvm.so+0x909659]  PSOldGen::initialize(ReservedSpace, unsigned long, char const*, int)+0xc9
+V  [libjvm.so+0x2d224e]  AdjoiningGenerations::AdjoiningGenerations(ReservedSpace, GenerationSizer*, unsigned long)+0x38e
+V  [libjvm.so+0x8d1197]  ParallelScavengeHeap::initialize()+0x1e7
+V  [libjvm.so+0xa0efd1]  Universe::initialize_heap()+0x101
+V  [libjvm.so+0xa10083]  universe_init()+0x33
+V  [libjvm.so+0x60d435]  init_globals()+0x55
+V  [libjvm.so+0x9f4aa7]  Threads::create_vm(JavaVMInitArgs*, bool*)+0x207
+V  [libjvm.so+0x6723c4]  JNI_CreateJavaVM+0x74
+C  [libjli.so+0x75f7]  JavaMain+0x87
+C  [libpthread.so.0+0x76db]  start_thread+0xdb
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x00007f2b2400b000 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=42262, stack(0x00007f2b2c280000,0x00007f2b2c380000)]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+heap address: 0x00000000c2a00000, size: 982 MB, Compressed Oops mode: Non-zero based:0x00000000c29ff000
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+00400000-00401000 r-xp 00000000 08:01 1218868                            /home/anson/Downloads/clion-2019.1/jre64/bin/java
+00600000-00601000 rw-p 00000000 08:01 1218868                            /home/anson/Downloads/clion-2019.1/jre64/bin/java
+01e4f000-01e70000 rw-p 00000000 00:00 0                                  [heap]
+c5380000-eb900000 ---p 00000000 00:00 0 
+eb900000-ecd80000 rw-p 00000000 00:00 0 
+ecd80000-100000000 ---p 00000000 00:00 0 
+7f2b15000000-7f2b15270000 rwxp 00000000 00:00 0 
+7f2b15270000-7f2b24000000 ---p 00000000 00:00 0 
+7f2b24000000-7f2b24035000 rw-p 00000000 00:00 0 
+7f2b24035000-7f2b28000000 ---p 00000000 00:00 0 
+7f2b28b85000-7f2b28e01000 rw-p 00000000 00:00 0 
+7f2b28e01000-7f2b28f48000 ---p 00000000 00:00 0 
+7f2b28f48000-7f2b28f53000 rw-p 00000000 00:00 0 
+7f2b28f53000-7f2b28fec000 ---p 00000000 00:00 0 
+7f2b28fec000-7f2b28ff7000 rw-p 00000000 00:00 0 
+7f2b28ff7000-7f2b293ad000 ---p 00000000 00:00 0 
+7f2b293ad000-7f2b293c8000 r-xp 00000000 08:01 1074697                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libzip.so
+7f2b293c8000-7f2b295c7000 ---p 0001b000 08:01 1074697                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libzip.so
+7f2b295c7000-7f2b295c8000 rw-p 0001a000 08:01 1074697                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libzip.so
+7f2b295c8000-7f2b295d3000 r-xp 00000000 08:01 923575                     /lib/x86_64-linux-gnu/libnss_files-2.27.so
+7f2b295d3000-7f2b297d2000 ---p 0000b000 08:01 923575                     /lib/x86_64-linux-gnu/libnss_files-2.27.so
+7f2b297d2000-7f2b297d3000 r--p 0000a000 08:01 923575                     /lib/x86_64-linux-gnu/libnss_files-2.27.so
+7f2b297d3000-7f2b297d4000 rw-p 0000b000 08:01 923575                     /lib/x86_64-linux-gnu/libnss_files-2.27.so
+7f2b297d4000-7f2b297da000 rw-p 00000000 00:00 0 
+7f2b297da000-7f2b297f1000 r-xp 00000000 08:01 923569                     /lib/x86_64-linux-gnu/libnsl-2.27.so
+7f2b297f1000-7f2b299f0000 ---p 00017000 08:01 923569                     /lib/x86_64-linux-gnu/libnsl-2.27.so
+7f2b299f0000-7f2b299f1000 r--p 00016000 08:01 923569                     /lib/x86_64-linux-gnu/libnsl-2.27.so
+7f2b299f1000-7f2b299f2000 rw-p 00017000 08:01 923569                     /lib/x86_64-linux-gnu/libnsl-2.27.so
+7f2b299f2000-7f2b299f4000 rw-p 00000000 00:00 0 
+7f2b299f4000-7f2b299ff000 r-xp 00000000 08:01 923586                     /lib/x86_64-linux-gnu/libnss_nis-2.27.so
+7f2b299ff000-7f2b29bfe000 ---p 0000b000 08:01 923586                     /lib/x86_64-linux-gnu/libnss_nis-2.27.so
+7f2b29bfe000-7f2b29bff000 r--p 0000a000 08:01 923586                     /lib/x86_64-linux-gnu/libnss_nis-2.27.so
+7f2b29bff000-7f2b29c00000 rw-p 0000b000 08:01 923586                     /lib/x86_64-linux-gnu/libnss_nis-2.27.so
+7f2b29c00000-7f2b29c08000 r-xp 00000000 08:01 923571                     /lib/x86_64-linux-gnu/libnss_compat-2.27.so
+7f2b29c08000-7f2b29e08000 ---p 00008000 08:01 923571                     /lib/x86_64-linux-gnu/libnss_compat-2.27.so
+7f2b29e08000-7f2b29e09000 r--p 00008000 08:01 923571                     /lib/x86_64-linux-gnu/libnss_compat-2.27.so
+7f2b29e09000-7f2b29e0a000 rw-p 00009000 08:01 923571                     /lib/x86_64-linux-gnu/libnss_compat-2.27.so
+7f2b29e0a000-7f2b29e34000 r-xp 00000000 08:01 1074667                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libjava.so
+7f2b29e34000-7f2b2a033000 ---p 0002a000 08:01 1074667                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libjava.so
+7f2b2a033000-7f2b2a035000 rw-p 00029000 08:01 1074667                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libjava.so
+7f2b2a035000-7f2b2a044000 r-xp 00000000 08:01 1074696                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libverify.so
+7f2b2a044000-7f2b2a243000 ---p 0000f000 08:01 1074696                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libverify.so
+7f2b2a243000-7f2b2a245000 rw-p 0000e000 08:01 1074696                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/libverify.so
+7f2b2a245000-7f2b2a24c000 r-xp 00000000 08:01 923626                     /lib/x86_64-linux-gnu/librt-2.27.so
+7f2b2a24c000-7f2b2a44b000 ---p 00007000 08:01 923626                     /lib/x86_64-linux-gnu/librt-2.27.so
+7f2b2a44b000-7f2b2a44c000 r--p 00006000 08:01 923626                     /lib/x86_64-linux-gnu/librt-2.27.so
+7f2b2a44c000-7f2b2a44d000 rw-p 00007000 08:01 923626                     /lib/x86_64-linux-gnu/librt-2.27.so
+7f2b2a44d000-7f2b2a5ea000 r-xp 00000000 08:01 923548                     /lib/x86_64-linux-gnu/libm-2.27.so
+7f2b2a5ea000-7f2b2a7e9000 ---p 0019d000 08:01 923548                     /lib/x86_64-linux-gnu/libm-2.27.so
+7f2b2a7e9000-7f2b2a7ea000 r--p 0019c000 08:01 923548                     /lib/x86_64-linux-gnu/libm-2.27.so
+7f2b2a7ea000-7f2b2a7eb000 rw-p 0019d000 08:01 923548                     /lib/x86_64-linux-gnu/libm-2.27.so
+7f2b2a7eb000-7f2b2b43a000 r-xp 00000000 08:01 1074701                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/server/libjvm.so
+7f2b2b43a000-7f2b2b63a000 ---p 00c4f000 08:01 1074701                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/server/libjvm.so
+7f2b2b63a000-7f2b2b70a000 rw-p 00c4f000 08:01 1074701                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/server/libjvm.so
+7f2b2b70a000-7f2b2b74c000 rw-p 00000000 00:00 0 
+7f2b2b74c000-7f2b2b933000 r-xp 00000000 08:01 923485                     /lib/x86_64-linux-gnu/libc-2.27.so
+7f2b2b933000-7f2b2bb33000 ---p 001e7000 08:01 923485                     /lib/x86_64-linux-gnu/libc-2.27.so
+7f2b2bb33000-7f2b2bb37000 r--p 001e7000 08:01 923485                     /lib/x86_64-linux-gnu/libc-2.27.so
+7f2b2bb37000-7f2b2bb39000 rw-p 001eb000 08:01 923485                     /lib/x86_64-linux-gnu/libc-2.27.so
+7f2b2bb39000-7f2b2bb3d000 rw-p 00000000 00:00 0 
+7f2b2bb3d000-7f2b2bb40000 r-xp 00000000 08:01 923508                     /lib/x86_64-linux-gnu/libdl-2.27.so
+7f2b2bb40000-7f2b2bd3f000 ---p 00003000 08:01 923508                     /lib/x86_64-linux-gnu/libdl-2.27.so
+7f2b2bd3f000-7f2b2bd40000 r--p 00002000 08:01 923508                     /lib/x86_64-linux-gnu/libdl-2.27.so
+7f2b2bd40000-7f2b2bd41000 rw-p 00003000 08:01 923508                     /lib/x86_64-linux-gnu/libdl-2.27.so
+7f2b2bd41000-7f2b2bd56000 r-xp 00000000 08:01 1074648                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/jli/libjli.so
+7f2b2bd56000-7f2b2bf56000 ---p 00015000 08:01 1074648                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/jli/libjli.so
+7f2b2bf56000-7f2b2bf57000 rw-p 00015000 08:01 1074648                    /home/anson/Downloads/clion-2019.1/jre64/lib/amd64/jli/libjli.so
+7f2b2bf57000-7f2b2bf71000 r-xp 00000000 08:01 923618                     /lib/x86_64-linux-gnu/libpthread-2.27.so
+7f2b2bf71000-7f2b2c170000 ---p 0001a000 08:01 923618                     /lib/x86_64-linux-gnu/libpthread-2.27.so
+7f2b2c170000-7f2b2c171000 r--p 00019000 08:01 923618                     /lib/x86_64-linux-gnu/libpthread-2.27.so
+7f2b2c171000-7f2b2c172000 rw-p 0001a000 08:01 923618                     /lib/x86_64-linux-gnu/libpthread-2.27.so
+7f2b2c172000-7f2b2c176000 rw-p 00000000 00:00 0 
+7f2b2c176000-7f2b2c19d000 r-xp 00000000 08:01 923457                     /lib/x86_64-linux-gnu/ld-2.27.so
+7f2b2c27f000-7f2b2c280000 ---p 00000000 00:00 0 
+7f2b2c280000-7f2b2c283000 ---p 00000000 00:00 0 
+7f2b2c283000-7f2b2c384000 rw-p 00000000 00:00 0 
+7f2b2c393000-7f2b2c39b000 rw-s 00000000 08:01 1312778                    /tmp/hsperfdata_anson/42261
+7f2b2c39b000-7f2b2c39c000 rw-p 00000000 00:00 0 
+7f2b2c39c000-7f2b2c39d000 r--p 00000000 00:00 0 
+7f2b2c39d000-7f2b2c39e000 r--p 00027000 08:01 923457                     /lib/x86_64-linux-gnu/ld-2.27.so
+7f2b2c39e000-7f2b2c39f000 rw-p 00028000 08:01 923457                     /lib/x86_64-linux-gnu/ld-2.27.so
+7f2b2c39f000-7f2b2c3a0000 rw-p 00000000 00:00 0 
+7ffc4dae2000-7ffc4db03000 rw-p 00000000 00:00 0                          [stack]
+7ffc4dbf6000-7ffc4dbf9000 r--p 00000000 00:00 0                          [vvar]
+7ffc4dbf9000-7ffc4dbfb000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+java_command: org.jetbrains.git4idea.http.GitAskPassApp Username for 'https://github.com': 
+java_class_path (initial): /home/anson/Downloads/clion-2019.1/plugins/git4idea/lib/git4idea-rt.jar:/home/anson/Downloads/clion-2019.1/lib/xmlrpc-2.0.1.jar:/home/anson/Downloads/clion-2019.1/lib/commons-codec-1.10.jar:/home/anson/Downloads/clion-2019.1/lib/util.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/lib/git-core:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+USERNAME=anson
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0xa44f70], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGBUS: [libjvm.so+0xa44f70], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGFPE: [libjvm.so+0x8add30], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGPIPE: [libjvm.so+0x8add30], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGXFSZ: [libjvm.so+0x8add30], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGILL: [libjvm.so+0x8add30], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGUSR1: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGUSR2: [libjvm.so+0x8af430], sa_mask[0]=00100000000000000000000000000000, sa_flags=SA_RESTART|SA_SIGINFO
+SIGHUP: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGINT: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGTERM: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGQUIT: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+
+
+---------------  S Y S T E M  ---------------
+
+OS:DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION="Ubuntu 18.04.1 LTS"
+
+uname:Linux 4.15.0-46-generic #49-Ubuntu SMP Wed Feb 6 09:33:07 UTC 2019 x86_64
+libc:glibc 2.27 NPTL 2.27 
+rlimit: STACK 8192k, CORE 0k, NPROC 15449, NOFILE 1048576, AS infinity
+load average:2.66 1.35 1.43
+
+/proc/meminfo:
+MemTotal:        4015740 kB
+MemFree:           94080 kB
+MemAvailable:          0 kB
+Buffers:             308 kB
+Cached:             7272 kB
+SwapCached:        21280 kB
+Active:          2837272 kB
+Inactive:         587376 kB
+Active(anon):    2835460 kB
+Inactive(anon):   584100 kB
+Active(file):       1812 kB
+Inactive(file):     3276 kB
+Unevictable:          32 kB
+Mlocked:              32 kB
+SwapTotal:        969960 kB
+SwapFree:              0 kB
+Dirty:                60 kB
+Writeback:             0 kB
+AnonPages:       3397180 kB
+Mapped:             4716 kB
+Shmem:              1580 kB
+Slab:             104984 kB
+SReclaimable:      43328 kB
+SUnreclaim:        61656 kB
+KernelStack:       11984 kB
+PageTables:        41508 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     2977828 kB
+Committed_AS:    6117232 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      171904 kB
+DirectMap2M:     4022272 kB
+DirectMap1G:     2097152 kB
+
+container (cgroup) information:
+container_type: cgroupv1
+cpu_cpuset_cpus: 0-3
+cpu_memory_nodes: 0
+active_processor_count: 4
+cpu_quota: -1
+cpu_period: 100000
+cpu_shares: -1
+memory_limit_in_bytes: -1
+memory_and_swap_limit_in_bytes: -2
+memory_soft_limit_in_bytes: -1
+memory_usage_in_bytes: 3499962368
+memory_max_usage_in_bytes: 45621248
+
+
+CPU:total 4 (initial active 4) (1 cores per cpu, 1 threads per core) family 6 model 60 stepping 3, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, lzcnt, tsc, tscinvbit, bmi1, bmi2
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz
+stepping	: 3
+microcode	: 0x24
+cpu MHz		: 2601.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 1
+core id		: 0
+cpu cores	: 1
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti ibrs ibpb stibp tpr_shadow vnmi ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid xsaveopt arat arch_capabilities
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
+bogomips	: 5202.00
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 43 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz
+stepping	: 3
+microcode	: 0x24
+cpu MHz		: 2601.000
+cache size	: 6144 KB
+physical id	: 2
+siblings	: 1
+core id		: 0
+cpu cores	: 1
+apicid		: 2
+initial apicid	: 2
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti ibrs ibpb stibp tpr_shadow vnmi ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid xsaveopt arat arch_capabilities
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
+bogomips	: 5202.00
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 43 bits physical, 48 bits virtual
+power management:
+
+processor	: 2
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz
+stepping	: 3
+microcode	: 0x24
+cpu MHz		: 2601.000
+cache size	: 6144 KB
+physical id	: 4
+siblings	: 1
+core id		: 0
+cpu cores	: 1
+apicid		: 4
+initial apicid	: 4
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti ibrs ibpb stibp tpr_shadow vnmi ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid xsaveopt arat arch_capabilities
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
+bogomips	: 5202.00
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 43 bits physical, 48 bits virtual
+power management:
+
+processor	: 3
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz
+stepping	: 3
+microcode	: 0x24
+cpu MHz		: 2601.000
+cache size	: 6144 KB
+physical id	: 6
+siblings	: 1
+core id		: 0
+cpu cores	: 1
+apicid		: 6
+initial apicid	: 6
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti ibrs ibpb stibp tpr_shadow vnmi ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid xsaveopt arat arch_capabilities
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
+bogomips	: 5202.00
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 43 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 4015740k(93964k free), swap 969960k(0k free)
+
+vm_info: OpenJDK 64-Bit Server VM (25.202-b39) for linux-amd64 JRE (1.8.0_202-release-1483-b39), built on Mar  7 2019 20:05:01 by "root" with gcc 4.4.7 20120313 (Red Hat 4.4.7-16)
+
+time: Sun Mar 31 21:55:38 2019
+timezone: CST
+elapsed time: 0 seconds (0d 0h 0m 0s)
+

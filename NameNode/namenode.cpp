@@ -8,14 +8,12 @@ time_t time1;
 NameNode::NameNode() {}
 
 void
-NameNode::updateNodes()
-{
+NameNode::updateNodes() {
     sort(this->data_nodes.begin(), this->data_nodes.end());
 }
 
 bool
-NameNode::spaceEnough(long long size)
-{
+NameNode::spaceEnough(long long size) {
     long long all_space = 0;
     for (DataNodeClient item : this->data_nodes) {
         all_space += item.getSpaceSize();
@@ -25,27 +23,24 @@ NameNode::spaceEnough(long long size)
 }
 
 vector<FileMeta>::iterator
-NameNode::findFile(string name)
-{
+NameNode::findFile(string name) {
     FILE_LOG(LOG_DEBUG) << "Find File Need To be Implemented!!!" << endl;
     return find(this->files.begin(), this->files.end(), name);
 }
 
 int
-NameNode::addDataNode(string ip, int node_id)
-{
+NameNode::addDataNode(string ip, int node_id) {
     DataNodeClient client(
-      grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
+            grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
     this->data_nodes.push_back(client);
     this->updateNodes();
     return 0;
 }
 
 int
-NameNode::removeDataNode(int node_id)
-{
+NameNode::removeDataNode(int node_id) {
     vector<DataNodeClient>::iterator it =
-      find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+            find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
     if (it == this->data_nodes.end()) {
         FILE_LOG(LOG_ERROR) << "Remove DataNode error, No DataNode named "
                             << node_id << " exits" << endl;
@@ -60,13 +55,12 @@ NameNode::addNewFile(string name,
                      long long size,
                      time_t mtime,
                      time_t atime,
-                     time_t ctime)
-{
+                     time_t ctime) {
     // TODO:文件的写入策略，包括段的分配策略和节点的分配策略，方便并行读的策略等
     vector<SegIndex> store_segs;
     if (this->findFile(name) != this->files.end()) {
         FILE_LOG(LOG_ERROR)
-          << "Add New FIle Error, " << name << " is already exists" << endl;
+            << "Add New FIle Error, " << name << " is already exists" << endl;
         return store_segs;
     }
     if (!this->spaceEnough(size)) {
@@ -78,7 +72,7 @@ NameNode::addNewFile(string name,
         if (this->data_nodes.back().getSpaceSize() < size) {
             // TODO:考虑一下如果空闲空间最多的节点存不下，可以分段存在不同的节点里面的情况
             FILE_LOG(LOG_ERROR)
-              << "FSNDN has no nodes can contain " << size << "bytes" << endl;
+                << "FSNDN has no nodes can contain " << size << "bytes" << endl;
             return store_segs;
         }
         // 新文件，只有1段，大小为size
@@ -90,11 +84,37 @@ NameNode::addNewFile(string name,
         store_segs = new_file.getUseNodes();
         return store_segs;
     }
+
     // 需要进行文件分段
     int seg = 0;
     int nodes_count = int(this->data_nodes.size());
+    int seg_per_node = 0;
     FileMeta new_file(name, 0, size, mtime, atime, ctime);
+
     // TODO:分段的策略
+    // 计划将段均匀的分配给不同的DataNode，相邻的段安排在一起，方便快速读写
+    // 每个节点需要存储几段
+    int node_count = this->data_nodes.size();
+    seg_per_node = size /( seg_size * node_count);
+    if (seg_per_node * (seg_size * node_count) < size) {
+        // 对于有余数的情况应当给他加1
+        seg_per_node += 1;
+    }
+    for (int i = 0; i < node_count; i++) {
+        for (int j = 0; j < seg_per_node; j++) {
+            new_file.addUseNodes(
+                    this->data_nodes[i].getNodeId(), seg, min((long long) seg_size, size-(seg*seg_size))
+            );
+            seg++;
+        }
+    }
+    new_file.setSegs(seg-1);
+    this->files.push_back(new_file);
+    this->updateNodes();
+    store_segs = new_file.getUseNodes();
+    return store_segs;
+
+    /* Old segment assign plan
     while ((seg + 1) * seg_size < size) {
         new_file.addUseNodes(
           this->data_nodes[seg % nodes_count].getNodeId(), seg, seg_size);
@@ -108,6 +128,7 @@ NameNode::addNewFile(string name,
     this->files.push_back(new_file);
     this->updateNodes();
     store_segs = new_file.getUseNodes();
+     */
     return store_segs;
 }
 
@@ -183,28 +204,25 @@ NameNode::addNewFile(string name, const char* content, long long size)
 */
 
 vector<SegIndex>
-NameNode::readFile(string name)
-{
+NameNode::readFile(string name) {
     vector<SegIndex> seg_index;
     vector<FileMeta>::iterator it = this->findFile(name);
     if (it == this->files.end()) {
         FILE_LOG(LOG_ERROR)
-          << "Read File Error, " << name << " is not exists!" << endl;
+            << "Read File Error, " << name << " is not exists!" << endl;
         return seg_index;
     }
     return (*it).getUseNodes();
 }
 
 int
-NameNode::delFile(string name)
-{
+NameNode::delFile(string name) {
     // TODO: Need To be Implmented
     return 0;
 }
 
 int
-NameNode::delDir(string name)
-{
+NameNode::delDir(string name) {
     // TODO: Need To be Implmented
     return 0;
 }
@@ -261,12 +279,11 @@ NameNode::readFile(string name, char* buffer, long long size)
 */
 
 long long
-NameNode::getFileSize(string name)
-{
+NameNode::getFileSize(string name) {
     vector<FileMeta>::iterator it = this->findFile(name);
     if (it == this->files.end()) {
         FILE_LOG(LOG_ERROR)
-          << "Get File Size Error, " << name << " is not exists!" << endl;
+            << "Get File Size Error, " << name << " is not exists!" << endl;
         return -1;
     }
     return (*it).getSize();

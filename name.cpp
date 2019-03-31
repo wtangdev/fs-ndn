@@ -5,6 +5,8 @@
 
 using namespace std;
 
+const int fsndn::seg_size = 1048576; //
+
 int
 main()
 {

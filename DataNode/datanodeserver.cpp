@@ -220,7 +220,7 @@ DataNodeSerImpl::GetSpaceSize(grpc::ServerContext* context,
                               const fsndnproto::EmptyRequest* request,
                               fsndnproto::LongReply* response)
 {
-    int space_size = datanode.getSpaceSize();
+    long long space_size = datanode.getSpaceSize();
     response->set_result(space_size);
     return Status::OK;
 }
