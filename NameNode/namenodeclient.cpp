@@ -136,6 +136,13 @@ NameNodeClient::delDir(const string& prefix)
     return response.result();
 }
 
+void
+NameNodeClient::updateNode(int status)
+{
+    // Update NameNode need to be implement
+    return;
+}
+
 long long
 NameNodeClient::getFileSize(const string& name)
 {

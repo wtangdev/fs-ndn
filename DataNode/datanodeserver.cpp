@@ -16,9 +16,9 @@ DataNodeSerImpl::DataNodeSerImpl(long long node_size)
 {}
 
 Status
-DataNodeSerImpl::GetFileSize(ServerContext* context,
-                             const FileNameRequest* request,
-                             LongReply* response)
+  DataNodeSerImpl::GetFileSize(ServerContext *context,
+                               const FileNameRequest *request,
+                               LongReply *response)
 {
     string name = request->name();
     long long size = datanode.getFileSize(name);
@@ -27,9 +27,9 @@ DataNodeSerImpl::GetFileSize(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::AddEmptyFile(ServerContext* context,
-                              const AddEmptyFileRequest* request,
-                              IntReply* response)
+  DataNodeSerImpl::AddEmptyFile(ServerContext *context,
+                                const AddEmptyFileRequest *request,
+                                IntReply *response)
 {
     string name = request->name();
     time_t mtime = request->mtime();
@@ -41,9 +41,9 @@ DataNodeSerImpl::AddEmptyFile(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::AddNewFile(ServerContext* context,
-                            const AddNewFileRequest* request,
-                            IntReply* response)
+  DataNodeSerImpl::AddNewFile(ServerContext *context,
+                              const AddNewFileRequest *request,
+                              IntReply *response)
 {
     string name = request->name();
     string content_string = request->content();
@@ -59,7 +59,7 @@ DataNodeSerImpl::AddNewFile(ServerContext* context,
     //        (content_string.c_str());
     char content[size];
     memset(content, 0, size);
-    memmove(content, (char*)content_string.c_str(), size);
+    memmove(content, (char *) content_string.c_str(), size);
     time_t mtime = request->mtime();
     time_t atime = request->atime();
     time_t ctime = request->ctime();
@@ -69,9 +69,9 @@ DataNodeSerImpl::AddNewFile(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::DelFile(ServerContext* context,
-                         const FileNameRequest* request,
-                         IntReply* response)
+  DataNodeSerImpl::DelFile(ServerContext *context,
+                           const FileNameRequest *request,
+                           IntReply *response)
 {
     string name = request->name();
     int result = datanode.delFile(name);
@@ -83,9 +83,9 @@ DataNodeSerImpl::DelFile(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::DelDir(ServerContext* context,
-                        const PrefixRequest* request,
-                        IntReply* response)
+  DataNodeSerImpl::DelDir(ServerContext *context,
+                          const PrefixRequest *request,
+                          IntReply *response)
 {
     string prefix = request->prefix();
     int result = datanode.delDir(prefix);
@@ -97,9 +97,9 @@ DataNodeSerImpl::DelDir(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::WriteToFile(ServerContext* context,
-                             const WriteRequest* request,
-                             IntReply* response)
+  DataNodeSerImpl::WriteToFile(ServerContext *context,
+                               const WriteRequest *request,
+                               IntReply *response)
 {
     string name = request->name();
     string content_string = request->content();
@@ -113,7 +113,7 @@ DataNodeSerImpl::WriteToFile(ServerContext* context,
     // TODO: 内存泄漏风险！
     char content[size];
     memset(content, 0, size);
-    memmove(content, (char*)content_string.c_str(), size);
+    memmove(content, (char *) content_string.c_str(), size);
     int result = datanode.writeToFile(name, content, size);
     if (result != 0) {
         return Status::CANCELLED;
@@ -122,15 +122,15 @@ DataNodeSerImpl::WriteToFile(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::ReadFromFile(ServerContext* context,
-                              const ReadRequest* request,
-                              ReadReply* response)
+  DataNodeSerImpl::ReadFromFile(ServerContext *context,
+                                const ReadRequest *request,
+                                ReadReply *response)
 {
     string name = request->name();
     long long size = request->size();
-    char* buffer = new char[size];
+    char *buffer = new char[size];
     int result = datanode.readFromFile(name, buffer, size);
-    cout << result << endl;
+    //    cout << result << endl;
     if (result != 0) {
         char result[13] = "No Such File";
         response->set_buffer(result, 13);
@@ -143,9 +143,9 @@ DataNodeSerImpl::ReadFromFile(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::AddFileSeg(ServerContext* context,
-                            const AddFileSegRequest* request,
-                            IntReply* response)
+  DataNodeSerImpl::AddFileSeg(ServerContext *context,
+                              const AddFileSegRequest *request,
+                              IntReply *response)
 {
     string name = request->name();
     string content_string = request->content();
@@ -158,7 +158,7 @@ DataNodeSerImpl::AddFileSeg(ServerContext* context,
     }
     char content[size];
     memset(content, 0, size);
-    memmove(content, (char*)content_string.c_str(), size);
+    memmove(content, (char *) content_string.c_str(), size);
     int seg = request->seg();
     int result = datanode.addFileSeg(name, content, size, seg);
     if (result != 0) {
@@ -168,15 +168,15 @@ DataNodeSerImpl::AddFileSeg(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::GetFileSeg(ServerContext* context,
-                            const GetFileSegRequest* request,
-                            ReadReply* response)
+  DataNodeSerImpl::GetFileSeg(ServerContext *context,
+                              const GetFileSegRequest *request,
+                              ReadReply *response)
 {
     string name = request->name();
     int size = request->size();
     int seg = request->seg();
-    char* buffer = new char[size];
-    cout << "   " << (void*)buffer << endl;
+    char *buffer = new char[size];
+    //    cout << "   " << (void*)buffer << endl;
     int result = datanode.getFileSeg(name, buffer, size, seg);
     if (result != 0) {
         char result[13] = "No Such File";
@@ -190,9 +190,9 @@ DataNodeSerImpl::GetFileSeg(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::GetChildren(ServerContext* context,
-                             const PrefixRequest* request,
-                             ChildrenReply* response)
+  DataNodeSerImpl::GetChildren(ServerContext *context,
+                               const PrefixRequest *request,
+                               ChildrenReply *response)
 {
     string prefix = request->prefix();
     vector<string> children = datanode.showChildren(prefix);
@@ -203,22 +203,22 @@ DataNodeSerImpl::GetChildren(ServerContext* context,
 }
 
 Status
-DataNodeSerImpl::GetAllChildren(ServerContext* context,
-                                const EmptyRequest* request,
-                                ChildrenReply* response)
+  DataNodeSerImpl::GetAllChildren(ServerContext *context,
+                                  const EmptyRequest *request,
+                                  ChildrenReply *response)
 {
     vector<string> children = datanode.showAllChildren();
     for (int i = 0; i < children.size(); i++) {
         response->add_children(children[i]);
-        cout << response->children(i) << endl;
+        //        cout << response->children(i) << endl;
     }
     return Status::OK;
 }
 
 grpc::Status
-DataNodeSerImpl::GetSpaceSize(grpc::ServerContext* context,
-                              const fsndnproto::EmptyRequest* request,
-                              fsndnproto::LongReply* response)
+  DataNodeSerImpl::GetSpaceSize(grpc::ServerContext *context,
+                                const fsndnproto::EmptyRequest *request,
+                                fsndnproto::LongReply *response)
 {
     long long space_size = datanode.getSpaceSize();
     response->set_result(space_size);

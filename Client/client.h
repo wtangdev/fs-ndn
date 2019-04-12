@@ -27,6 +27,7 @@ public:
 
     int removeDataNode(int node_id);
 
+    // 不建议使用,因为很难能把一个大文件完整的存放到内存里面去
     int addNewFile(string name,
                    const char *content,
                    long long size,
@@ -45,6 +46,7 @@ public:
     int readFile(string name,
                  string file_path);
 
+    // 不建议使用,因为很难能把一个大文件完整的存放到内存里面去
     int readFile(string name, char *buffer, long long size);
 
     int delFIle(string name);

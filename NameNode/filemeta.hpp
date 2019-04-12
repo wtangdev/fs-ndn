@@ -7,22 +7,26 @@
 
 using namespace std;
 
+// 每一段的文件的大小
 struct SegWithSize
 {
     int seg;
     int size;
 };
 
+// DataNode 里面存储的段
 struct SegIndex
 {
     int node;
     vector<SegWithSize> segs;
-    bool operator==(const int& other_seg) const { return node == other_seg; }
+    bool operator==(const int &other_seg) const { return node == other_seg; }
 };
 
+// 文件元数据
 class FileMeta
 {
   public:
+    FileMeta();
     FileMeta(string name,
              int segs,
              long long size,
@@ -41,7 +45,7 @@ class FileMeta
     int minusReadTimes();
     int minusUseNodes(int node);
 
-    bool operator==(const string& other_file_name) const;
+    bool operator==(const string &other_file_name) const;
 
   private:
     ndn::Name name;

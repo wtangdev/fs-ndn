@@ -54,7 +54,6 @@ int
         name += name1;
         client.addNewFile(
           name, pict_path, time(&time1), time(&time1), time(&time1));
-        usleep(20000);
     }
 
     fin.close();

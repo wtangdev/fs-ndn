@@ -3,6 +3,8 @@
 #include "iostream"
 using namespace std;
 
+FileMeta::FileMeta() {}
+
 FileMeta::FileMeta(string name,
                    int segs,
                    long long size,
@@ -20,51 +22,51 @@ FileMeta::FileMeta(string name,
 }
 
 ndn::Name
-FileMeta::getName()
+  FileMeta::getName()
 {
     return this->name;
 }
 
 int
-FileMeta::getSegs()
+  FileMeta::getSegs()
 {
     return this->segs;
 }
 
 long long
-FileMeta::getSize()
+  FileMeta::getSize()
 {
     return this->size;
 }
 
 int
-FileMeta::getReadTimes()
+  FileMeta::getReadTimes()
 {
     return read_times;
 }
 
 vector<SegIndex>
-FileMeta::getUseNodes()
+  FileMeta::getUseNodes()
 {
     return this->use_nodes;
 }
 
 int
-FileMeta::setSegs(int segs)
+  FileMeta::setSegs(int segs)
 {
     this->segs = segs;
     return 0;
 }
 
 int
-FileMeta::addReadTimes()
+  FileMeta::addReadTimes()
 {
     this->read_times++;
     return 0;
 }
 
 int
-FileMeta::addUseNodes(int node, int seg, int size)
+  FileMeta::addUseNodes(int node, int seg, int size)
 {
     vector<SegIndex>::iterator it;
     for (it = this->use_nodes.begin(); it != this->use_nodes.end(); it++) {
@@ -90,14 +92,14 @@ FileMeta::addUseNodes(int node, int seg, int size)
 }
 
 int
-FileMeta::minusReadTimes()
+  FileMeta::minusReadTimes()
 {
     this->read_times--;
     return 0;
 }
 
 int
-FileMeta::minusUseNodes(int node)
+  FileMeta::minusUseNodes(int node)
 {
     vector<SegIndex>::iterator it;
     for (it = this->use_nodes.begin(); it != this->use_nodes.end(); it++) {
@@ -115,7 +117,7 @@ FileMeta::minusUseNodes(int node)
 }
 
 bool
-FileMeta::operator==(const string& other_file_name) const
+  FileMeta::operator==(const string &other_file_name) const
 {
     return this->name.toUri() == other_file_name;
 }

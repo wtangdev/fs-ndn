@@ -27,6 +27,8 @@ class NameNodeClient
     int delFile(const string& name);
     int delDir(const string& prefix);
 
+    void updateNode(int status);
+
     long long getFileSize(const string& name);
 
     bool operator==(const int& other_node_id) const;
