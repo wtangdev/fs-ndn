@@ -18,7 +18,7 @@ DataNodeClient::DataNodeClient(shared_ptr<Channel> channel, int node_id)
 }
 
 long long
-DataNodeClient::getFileSize(const string& name)
+  DataNodeClient::getFileSize(const string &name)
 {
     FileNameRequest request;
     request.set_name(name);
@@ -35,10 +35,10 @@ DataNodeClient::getFileSize(const string& name)
 }
 // 创建空文件
 int
-DataNodeClient::addEmptyFile(string name,
-                             time_t mtime,
-                             time_t atime,
-                             time_t ctime)
+  DataNodeClient::addEmptyFile(string name,
+                               time_t mtime,
+                               time_t atime,
+                               time_t ctime)
 {
     AddEmptyFileRequest request;
     request.set_name(name);
@@ -60,12 +60,12 @@ DataNodeClient::addEmptyFile(string name,
 
 // 创建含内容的文件
 int
-DataNodeClient::addNewFile(string name,
-                           const char* content,
-                           long long size,
-                           time_t mtime,
-                           time_t atime,
-                           time_t ctime)
+  DataNodeClient::addNewFile(string name,
+                             const char *content,
+                             long long size,
+                             time_t mtime,
+                             time_t atime,
+                             time_t ctime)
 {
     AddNewFileRequest request;
     request.set_name(name);
@@ -87,7 +87,7 @@ DataNodeClient::addNewFile(string name,
 }
 
 int
-DataNodeClient::delFile(string name)
+  DataNodeClient::delFile(string name)
 {
     FileNameRequest request;
     request.set_name(name);
@@ -103,7 +103,7 @@ DataNodeClient::delFile(string name)
     return reply.result();
 }
 int
-DataNodeClient::delDir(string prefix)
+  DataNodeClient::delDir(string prefix)
 {
     PrefixRequest request;
     request.set_prefix(prefix);
@@ -120,7 +120,7 @@ DataNodeClient::delDir(string prefix)
 }
 
 int
-DataNodeClient::writeToFile(string name, const char* content, long long size)
+  DataNodeClient::writeToFile(string name, const char *content, long long size)
 {
     WriteRequest request;
     request.set_name(name);
@@ -139,7 +139,7 @@ DataNodeClient::writeToFile(string name, const char* content, long long size)
 }
 
 int
-DataNodeClient::readFromFile(string name, char* buffer, long long size)
+  DataNodeClient::readFromFile(string name, char *buffer, long long size)
 {
     ReadRequest request;
     request.set_name(name);
@@ -156,12 +156,15 @@ DataNodeClient::readFromFile(string name, char* buffer, long long size)
     string buffer_string = reply.buffer();
     // TODO: 内存泄漏风险！
     //    memset(buffer, 0, size);
-    memmove(buffer, (char*)buffer_string.c_str(), size);
+    memmove(buffer, (char *) buffer_string.c_str(), size);
     return 0;
 }
 
 int
-DataNodeClient::addFileSeg(string name, const char* content, int size, int seg)
+  DataNodeClient::addFileSeg(string name,
+                             const char *content,
+                             int size,
+                             int seg)
 {
     AddFileSegRequest request;
     request.set_name(name);
@@ -180,7 +183,7 @@ DataNodeClient::addFileSeg(string name, const char* content, int size, int seg)
 }
 
 int
-DataNodeClient::getFileSeg(string name, char* buffer, int size, int seg)
+  DataNodeClient::getFileSeg(string name, char *buffer, int size, int seg)
 {
     GetFileSegRequest request;
     request.set_name(name);
@@ -198,12 +201,12 @@ DataNodeClient::getFileSeg(string name, char* buffer, int size, int seg)
     string buffer_string = reply.buffer();
     // TODO: 内存泄漏风险！
     memset(buffer, 0, size);
-    memmove(buffer, (char*)buffer_string.c_str(), size);
+    memmove(buffer, (char *) buffer_string.c_str(), size);
     return 0;
 }
 
 vector<string>
-DataNodeClient::showChildren(string prefix)
+  DataNodeClient::showChildren(string prefix)
 {
     PrefixRequest request;
     request.set_prefix(prefix);
@@ -223,7 +226,7 @@ DataNodeClient::showChildren(string prefix)
 }
 
 vector<string>
-DataNodeClient::showAllChildren()
+  DataNodeClient::showAllChildren()
 {
     EmptyRequest request;
     ChildrenReply reply;
@@ -239,7 +242,7 @@ DataNodeClient::showAllChildren()
 }
 
 long long
-DataNodeClient::getSpaceSize() const
+  DataNodeClient::getSpaceSize() const
 {
     EmptyRequest request;
     LongReply reply;
@@ -254,19 +257,19 @@ DataNodeClient::getSpaceSize() const
 }
 
 int
-DataNodeClient::getNodeId()
+  DataNodeClient::getNodeId()
 {
     return node_id;
 }
 
 bool
-DataNodeClient::operator==(const int& other_node_id) const
+  DataNodeClient::operator==(const int &other_node_id) const
 {
     return this->node_id == other_node_id;
 }
 
 bool
-DataNodeClient::operator<(const DataNodeClient& other_node) const
+  DataNodeClient::operator<(const DataNodeClient &other_node) const
 {
     return this->getSpaceSize() < other_node.getSpaceSize();
 }

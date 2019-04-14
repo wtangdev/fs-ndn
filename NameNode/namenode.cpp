@@ -77,24 +77,25 @@ int
     return 0;
 }
 
-vector<SegIndex>
+int
   NameNode::addNewFile(string name,
                        long long size,
                        time_t mtime,
                        time_t atime,
-                       time_t ctime)
+                       time_t ctime,
+                       vector<SegIndex> &store_segs)
 {
     // TODO:文件的写入策略，包括段的分配策略和节点的分配策略，方便并行读的策略等
-    vector<SegIndex> store_segs;
+    //    vector<SegIndex> store_segs;
     FileMeta file_meta;
     if (this->findFile(name, file_meta) != -1) {
         FILE_LOG(LOG_ERROR)
           << "Add New File Error, " << name << " is already exists" << endl;
-        return store_segs;
+        return -1;
     }
     if (!this->spaceEnough(size)) {
         FILE_LOG(LOG_ERROR) << "FSNDN IS FULL!" << endl;
-        return store_segs;
+        return -1;
     }
     int seg_size = fsndn::seg_size;
     if (size < seg_size) {
@@ -102,7 +103,7 @@ vector<SegIndex>
             // TODO:考虑一下如果空闲空间最多的节点存不下，可以分段存在不同的节点里面的情况
             FILE_LOG(LOG_ERROR)
               << "FSNDN has no nodes can contain " << size << "bytes" << endl;
-            return store_segs;
+            return -1;
         }
         // 新文件，只有1段，大小为size
         FileMeta new_file(name, 1, size, mtime, atime, ctime);
@@ -113,7 +114,7 @@ vector<SegIndex>
           unordered_map<string, FileMeta>::value_type(name, new_file));
         this->updateNodes();
         store_segs = new_file.getUseNodes();
-        return store_segs;
+        return 0;
     }
 
     // 需要进行文件分段
@@ -150,7 +151,7 @@ vector<SegIndex>
 
     //    printHashTable();
 
-    return store_segs;
+    return 0;
 
     /* Old segment assign plan
     while ((seg + 1) * seg_size < size) {
@@ -240,17 +241,18 @@ NameNode::addNewFile(string name, const char* content, long long size)
 }
 */
 
-vector<SegIndex>
-  NameNode::readFile(string name)
+int
+  NameNode::readFile(string name, vector<SegIndex> &seg_index)
 {
-    vector<SegIndex> seg_index;
+    //    vector<SegIndex> seg_index;
     FileMeta file_meta;
     if (this->findFile(name, file_meta) == -1) {
         FILE_LOG(LOG_ERROR)
           << "Read File Error, " << name << " is not exists!" << endl;
-        return seg_index;
+        return -1;
     }
-    return file_meta.getUseNodes();
+    seg_index = file_meta.getUseNodes();
+    return 0;
 }
 
 int

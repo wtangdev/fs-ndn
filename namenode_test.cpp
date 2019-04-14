@@ -27,8 +27,12 @@ int
     cout << "HelloWorld!\n";
 
     string file_path = "/home/anson/Desktop/USTC.jpg";
+    string pict_path = "/home/anson/Desktop/pict.jpg";
+    string word_path = "/home/anson/Desktop/names_copy.txt";
+    int ret = 0;
     // 步骤1：发起命名数据写请求
-    int ret = client.addNewFile("/c1/c2/c3/c4/c5/USTC.jpeg",
+    /*
+    client.addNewFile("/c1/c2/c3/c4/c5/USTC.jpeg",
                                 file_path,
                                 time(&time1),
                                 time(&time1),
@@ -38,7 +42,10 @@ int
                       time(&time1),
                       time(&time1),
                       time(&time1));
-    string pict_path = "/home/anson/Desktop/pict.jpg";
+    */
+    ret = client.addNewFile(
+      "/a/b/c", word_path, time(&time1), time(&time1), time(&time1));
+    /*
     client.addNewFile("/a/b/c/d/e/f/g/USTC.jpeg",
                       pict_path,
                       time(&time1),
@@ -47,24 +54,33 @@ int
     string name_path = "/home/anson/Desktop/names.txt";
     ifstream fin(name_path, ios::binary | ios::in);
     const char *str = "NEW STR";
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 16; i++) {
         string name = "/";
         string name1;
         fin >> name1;
         name += name1;
         client.addNewFile(
-          name, pict_path, time(&time1), time(&time1), time(&time1));
-        usleep(20000);
+          name, word_path, time(&time1), time(&time1), time(&time1));
     }
 
     fin.close();
 
+    */
     if (ret != -1) {
         // 步骤1：发起命名数据读请求
         client.readFile("/c1/c2/c3/c4/c5/USTC.jpeg",
                         "/home/anson/Desktop/newUSTC.jpg");
-        string test = "/www.cairn.info/revue-spirale-2010-3-page-159.htm";
-        cout << client.readFile(test, "/home/anson/Desktop/test.jpg") << endl;
+        string test = "/a/b/c";
+        string test1 =
+          "/linkinghub.elsevier.com/retrieve/pii/S1050464810002901";
+        string test2 = "/openurl.ingenta.com/content/"
+                       "xref?genreequalsarticle&issnequals1357-1559&"
+                       "volumeequals16&issueequals1&spageequals24";
+        cout << client.readFile(test, "/home/anson/Desktop/test.txt") << endl;
+        //        cout << client.readFile(test1,
+        //        "/home/anson/Desktop/test1.txt") << endl; cout <<
+        //        client.readFile(test2, "/home/anson/Desktop/test2.txt") <<
+        //        endl;
     }
     /*
 //    ifstream fin("/home/anson/Desktop/ustc.jpg", ios::binary | ios::in);

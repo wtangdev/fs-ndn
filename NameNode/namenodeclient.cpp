@@ -8,7 +8,7 @@ NameNodeClient::NameNodeClient(shared_ptr<grpc::Channel> Channel, int node_id)
 }
 
 int
-NameNodeClient::addDataNode(const string& ip, int node_id)
+  NameNodeClient::addDataNode(const string &ip, int node_id)
 {
     namenodeproto::AddDataNodeRequst request;
     request.set_ip(ip);
@@ -25,7 +25,7 @@ NameNodeClient::addDataNode(const string& ip, int node_id)
 }
 
 int
-NameNodeClient::removeDataNode(int node_id)
+  NameNodeClient::removeDataNode(int node_id)
 {
     namenodeproto::RemDataNodeRequst request;
     request.set_node(node_id);
@@ -41,11 +41,11 @@ NameNodeClient::removeDataNode(int node_id)
 }
 
 vector<SegIndex>
-NameNodeClient::addNewFile(const string& name,
-                           long long size,
-                           time_t mtime,
-                           time_t atime,
-                           time_t ctime)
+  NameNodeClient::addNewFile(const string &name,
+                             long long size,
+                             time_t mtime,
+                             time_t atime,
+                             time_t ctime)
 {
     namenodeproto::AddNewFileRequest request;
     request.set_name(name);
@@ -59,7 +59,8 @@ NameNodeClient::addNewFile(const string& name,
     vector<SegIndex> seg_index;
     if (!status.ok()) {
         FILE_LOG(LOG_ERROR)
-          << status.error_code() << " : " << status.error_message() << endl;
+          << status.error_message() << " " << status.error_code()
+          << " Add New File Error : " << name << endl;
         return seg_index;
     }
     for (namenodeproto::SegIndex si : response.index()) {
@@ -77,7 +78,7 @@ NameNodeClient::addNewFile(const string& name,
 }
 
 vector<SegIndex>
-NameNodeClient::readFile(string name)
+  NameNodeClient::readFile(string name)
 {
     namenodeproto::ReadRequest request;
     request.set_name(name);
@@ -105,7 +106,7 @@ NameNodeClient::readFile(string name)
 }
 
 int
-NameNodeClient::delFile(const string& name)
+  NameNodeClient::delFile(const string &name)
 {
     namenodeproto::FileNameRequest request;
     request.set_name(name);
@@ -121,7 +122,7 @@ NameNodeClient::delFile(const string& name)
 }
 
 int
-NameNodeClient::delDir(const string& prefix)
+  NameNodeClient::delDir(const string &prefix)
 {
     namenodeproto::PrefixRequest request;
     request.set_prefix(prefix);
@@ -137,14 +138,14 @@ NameNodeClient::delDir(const string& prefix)
 }
 
 void
-NameNodeClient::updateNode(int status)
+  NameNodeClient::updateNode(int status)
 {
     // Update NameNode need to be implement
     return;
 }
 
 long long
-NameNodeClient::getFileSize(const string& name)
+  NameNodeClient::getFileSize(const string &name)
 {
     namenodeproto::FileNameRequest request;
     request.set_name(name);
@@ -160,7 +161,7 @@ NameNodeClient::getFileSize(const string& name)
 }
 
 bool
-NameNodeClient::operator==(const int& other_node_id) const
+  NameNodeClient::operator==(const int &other_node_id) const
 {
     return this->node_id == other_node_id;
 }

@@ -25,12 +25,13 @@ class NameNode
     int removeDataNode(int node_id);
 
     // 为文件生成命名数据数据信息，并建立写入位置索引,然后返回写入位置索引个客户端
-    vector<SegIndex> addNewFile(string name,
-                                long long size,
-                                time_t mtime,
-                                time_t atime,
-                                time_t ctime);
-    vector<SegIndex> readFile(string name);
+    int addNewFile(string name,
+                   long long size,
+                   time_t mtime,
+                   time_t atime,
+                   time_t ctime,
+                   vector<SegIndex> &store_segs);
+    int readFile(string name, vector<SegIndex> &seg_segs);
     int delFile(string name);
     int delDir(string name);
 

@@ -4,9 +4,9 @@
 #include "namenode.hpp"
 
 grpc::Status
-NameNodeSerImpl::AddDataNode(grpc::ServerContext* context,
-                             const namenodeproto::AddDataNodeRequst* request,
-                             namenodeproto::IntReply* response)
+  NameNodeSerImpl::AddDataNode(grpc::ServerContext *context,
+                               const namenodeproto::AddDataNodeRequst *request,
+                               namenodeproto::IntReply *response)
 {
     string ip = request->ip();
     int node = request->node();
@@ -21,9 +21,9 @@ NameNodeSerImpl::AddDataNode(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::RemDataNode(grpc::ServerContext* context,
-                             const namenodeproto::RemDataNodeRequst* request,
-                             namenodeproto::IntReply* response)
+  NameNodeSerImpl::RemDataNode(grpc::ServerContext *context,
+                               const namenodeproto::RemDataNodeRequst *request,
+                               namenodeproto::IntReply *response)
 {
     int node = request->node();
     int result = namenode.removeDataNode(node);
@@ -36,26 +36,30 @@ NameNodeSerImpl::RemDataNode(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::AddNewFile(grpc::ServerContext* context,
-                            const namenodeproto::AddNewFileRequest* request,
-                            namenodeproto::SegIndexReply* response)
+  NameNodeSerImpl::AddNewFile(grpc::ServerContext *context,
+                              const namenodeproto::AddNewFileRequest *request,
+                              namenodeproto::SegIndexReply *response)
 {
     string name = request->name();
+    FILE_LOG(LOG_DEBUG) << name << " normal?\n";
     long long size = request->size();
     time_t mtime = request->mtime();
     time_t atime = request->atime();
     time_t ctime = request->ctime();
     vector<SegIndex> seg_index;
-    seg_index = namenode.addNewFile(name, size, mtime, atime, ctime);
+    int rt = namenode.addNewFile(name, size, mtime, atime, ctime, seg_index);
+    if (rt != 0) {
+        return Status::CANCELLED;
+    }
     int indexi = 0;
     for (SegIndex item : seg_index) {
         response->add_index();
-        namenodeproto::SegIndex* index_temp = response->mutable_index(indexi++);
+        namenodeproto::SegIndex *index_temp = response->mutable_index(indexi++);
         index_temp->set_node(item.node);
         int indexj = 0;
         for (SegWithSize ss : item.segs) {
             index_temp->add_segs();
-            namenodeproto::SegWithSize* ss_temp =
+            namenodeproto::SegWithSize *ss_temp =
               index_temp->mutable_segs(indexj++);
             ss_temp->set_seg(ss.seg);
             ss_temp->set_size(ss.size);
@@ -65,22 +69,25 @@ NameNodeSerImpl::AddNewFile(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::ReadFromFile(grpc::ServerContext* context,
-                              const namenodeproto::ReadRequest* request,
-                              namenodeproto::SegIndexReply* response)
+  NameNodeSerImpl::ReadFromFile(grpc::ServerContext *context,
+                                const namenodeproto::ReadRequest *request,
+                                namenodeproto::SegIndexReply *response)
 {
     string name = request->name();
     vector<SegIndex> seg_index;
-    seg_index = namenode.readFile(name);
+    int rt = namenode.readFile(name, seg_index);
+    if (rt != 0) {
+        return Status::CANCELLED;
+    }
     int indexi = 0;
     for (SegIndex item : seg_index) {
         response->add_index();
-        namenodeproto::SegIndex* index_temp = response->mutable_index(indexi++);
+        namenodeproto::SegIndex *index_temp = response->mutable_index(indexi++);
         index_temp->set_node(item.node);
         int indexj = 0;
         for (SegWithSize ss : item.segs) {
             index_temp->add_segs();
-            namenodeproto::SegWithSize* ss_temp =
+            namenodeproto::SegWithSize *ss_temp =
               index_temp->mutable_segs(indexj++);
             ss_temp->set_seg(ss.seg);
             ss_temp->set_size(ss.size);
@@ -90,9 +97,9 @@ NameNodeSerImpl::ReadFromFile(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::DelFile(grpc::ServerContext* context,
-                         const namenodeproto::FileNameRequest* request,
-                         namenodeproto::IntReply* response)
+  NameNodeSerImpl::DelFile(grpc::ServerContext *context,
+                           const namenodeproto::FileNameRequest *request,
+                           namenodeproto::IntReply *response)
 {
     string name = request->name();
     int result = namenode.delFile(name);
@@ -105,9 +112,9 @@ NameNodeSerImpl::DelFile(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::DelDir(grpc::ServerContext* context,
-                        const namenodeproto::PrefixRequest* request,
-                        namenodeproto::IntReply* response)
+  NameNodeSerImpl::DelDir(grpc::ServerContext *context,
+                          const namenodeproto::PrefixRequest *request,
+                          namenodeproto::IntReply *response)
 {
     string prefix = request->prefix();
     int result = namenode.delDir(prefix);
@@ -120,9 +127,9 @@ NameNodeSerImpl::DelDir(grpc::ServerContext* context,
 }
 
 grpc::Status
-NameNodeSerImpl::GetFileSize(grpc::ServerContext* context,
-                             const namenodeproto::FileNameRequest* request,
-                             namenodeproto::LongReply* response)
+  NameNodeSerImpl::GetFileSize(grpc::ServerContext *context,
+                               const namenodeproto::FileNameRequest *request,
+                               namenodeproto::LongReply *response)
 {
     string name = request->name();
     long long size = namenode.getFileSize(name);

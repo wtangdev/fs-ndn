@@ -42,7 +42,8 @@ void
                   int seg)
 {
     int seg_size = fsndn::seg_size;
-    cout << size << " !!!!!!!!!!!!!!!!!!!!!! \n";
+    // TODO: 此处 size 会有几率出现负数！！！
+    FILE_LOG(LOG_DEBUG) << size << " !!!!!!!!!!!!!!!!!!!!!! \n";
     char *temp_content = new char[size];
     ifstream fin(file_path, ios::binary | ios::in);
     fin.seekg(seg * seg_size);
@@ -226,6 +227,9 @@ int
         for (SegWithSize ss : si.segs) {
             int insert_seg = ss.seg;
             int insert_size = ss.size;
+            if (insert_size < 0) {
+                return -1;
+            }
             // 步骤4：分块写入
             thread t(writeFileThread,
                      ref(it),

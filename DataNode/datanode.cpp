@@ -157,6 +157,7 @@ int
         FILE_LOG(LOG_ERROR) << "FSNDN has no file named" << name << endl;
         return -1;
     }
+    cout << inode_file.getSize() << endl;
     inode_file.readSeg(buffer, size, seg);
     return 0;
 }
