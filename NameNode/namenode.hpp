@@ -63,6 +63,7 @@ class NameNode
     void buildArrays(vector<int> next, vector<int> back);
     // 打印目前构建的哈希表用于调试
     void printHashTable();
+    void printSegIndex(vector<SegIndex>);
 };
 
 #endif // NAMENODE_HPP

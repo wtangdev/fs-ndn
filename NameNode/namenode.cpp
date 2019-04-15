@@ -6,14 +6,12 @@
 NameNode::NameNode() {}
 
 void
-  NameNode::updateNodes()
-{
+NameNode::updateNodes() {
     sort(this->data_nodes.begin(), this->data_nodes.end());
 }
 
 bool
-  NameNode::spaceEnough(long long size)
-{
+NameNode::spaceEnough(long long size) {
     long long all_space = 0;
     for (DataNodeClient item : this->data_nodes) {
         all_space += item.getSpaceSize();
@@ -23,8 +21,7 @@ bool
 }
 
 int
-  NameNode::findFile(string name, FileMeta &file_meta)
-{
+NameNode::findFile(string name, FileMeta &file_meta) {
     //    FILE_LOG(LOG_DEBUG) << "Find File Need To be Implemented!!!" << endl;
     //    return find(this->files.begin(), this->files.end(), name);
     unordered_map<string, FileMeta>::iterator it;
@@ -37,15 +34,13 @@ int
 }
 
 void
-  NameNode::buildArrays(vector<int> next, vector<int> back)
-{}
+NameNode::buildArrays(vector<int> next, vector<int> back) {}
 
 void
-  NameNode::printHashTable()
-{
+NameNode::printHashTable() {
     // 记录当前的构件数目的分布情况
     for (unordered_map<string, FileMeta>::iterator it =
-           this->name_index.begin();
+            this->name_index.begin();
          it != this->name_index.end();
          it++) {
         cout << it->first << " " << it->second.getName() << endl;
@@ -54,20 +49,18 @@ void
 }
 
 int
-  NameNode::addDataNode(string ip, int node_id)
-{
+NameNode::addDataNode(string ip, int node_id) {
     DataNodeClient client(
-      grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
+            grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
     this->data_nodes.push_back(client);
     this->updateNodes();
     return 0;
 }
 
 int
-  NameNode::removeDataNode(int node_id)
-{
+NameNode::removeDataNode(int node_id) {
     vector<DataNodeClient>::iterator it =
-      find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+            find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
     if (it == this->data_nodes.end()) {
         FILE_LOG(LOG_ERROR) << "Remove DataNode error, No DataNode named "
                             << node_id << " exits" << endl;
@@ -78,19 +71,18 @@ int
 }
 
 int
-  NameNode::addNewFile(string name,
-                       long long size,
-                       time_t mtime,
-                       time_t atime,
-                       time_t ctime,
-                       vector<SegIndex> &store_segs)
-{
+NameNode::addNewFile(string name,
+                     long long size,
+                     time_t mtime,
+                     time_t atime,
+                     time_t ctime,
+                     vector<SegIndex> &store_segs) {
     // TODO:文件的写入策略，包括段的分配策略和节点的分配策略，方便并行读的策略等
     //    vector<SegIndex> store_segs;
     FileMeta file_meta;
     if (this->findFile(name, file_meta) != -1) {
         FILE_LOG(LOG_ERROR)
-          << "Add New File Error, " << name << " is already exists" << endl;
+            << "Add New File Error, " << name << " is already exists" << endl;
         return -1;
     }
     if (!this->spaceEnough(size)) {
@@ -102,7 +94,7 @@ int
         if (this->data_nodes.back().getSpaceSize() < size) {
             // TODO:考虑一下如果空闲空间最多的节点存不下，可以分段存在不同的节点里面的情况
             FILE_LOG(LOG_ERROR)
-              << "FSNDN has no nodes can contain " << size << "bytes" << endl;
+                << "FSNDN has no nodes can contain " << size << "bytes" << endl;
             return -1;
         }
         // 新文件，只有1段，大小为size
@@ -111,7 +103,7 @@ int
         new_file.addUseNodes(nodeid_insert, 0, int(size));
         //        this->files.push_back(new_file);
         this->name_index.insert(
-          unordered_map<string, FileMeta>::value_type(name, new_file));
+                unordered_map<string, FileMeta>::value_type(name, new_file));
         this->updateNodes();
         store_segs = new_file.getUseNodes();
         return 0;
@@ -133,10 +125,14 @@ int
     }
     for (int i = 0; i < node_count; i++) {
         for (int j = 0; j < seg_per_node; j++) {
+            int item_size = min((long long) seg_size, size - (seg * seg_size));
+            if (item_size < 0) {
+                break;
+            }
             new_file.addUseNodes(
-              this->data_nodes[i].getNodeId(),
-              seg,
-              min((long long) seg_size, size - (seg * seg_size)));
+                    this->data_nodes[i].getNodeId(),
+                    seg,
+                    item_size);
             seg++;
         }
     }
@@ -147,7 +143,7 @@ int
 
     // 将当前名称插入快速查找哈希表
     this->name_index.insert(
-      unordered_map<string, FileMeta>::value_type(name, new_file));
+            unordered_map<string, FileMeta>::value_type(name, new_file));
 
     //    printHashTable();
 
@@ -242,13 +238,12 @@ NameNode::addNewFile(string name, const char* content, long long size)
 */
 
 int
-  NameNode::readFile(string name, vector<SegIndex> &seg_index)
-{
+NameNode::readFile(string name, vector<SegIndex> &seg_index) {
     //    vector<SegIndex> seg_index;
     FileMeta file_meta;
     if (this->findFile(name, file_meta) == -1) {
         FILE_LOG(LOG_ERROR)
-          << "Read File Error, " << name << " is not exists!" << endl;
+            << "Read File Error, " << name << " is not exists!" << endl;
         return -1;
     }
     seg_index = file_meta.getUseNodes();
@@ -256,15 +251,13 @@ int
 }
 
 int
-  NameNode::delFile(string name)
-{
+NameNode::delFile(string name) {
     // TODO: Need To be Implmented
     return 0;
 }
 
 int
-  NameNode::delDir(string name)
-{
+NameNode::delDir(string name) {
     // TODO: Need To be Implmented
     return 0;
 }
@@ -321,26 +314,23 @@ NameNode::readFile(string name, char* buffer, long long size)
 */
 
 long long
-  NameNode::getFileSize(string name)
-{
+NameNode::getFileSize(string name) {
     FileMeta file_meta;
     if (this->findFile(name, file_meta)) {
         FILE_LOG(LOG_ERROR)
-          << "Get File Size Error, " << name << " is not exists!" << endl;
+            << "Get File Size Error, " << name << " is not exists!" << endl;
         return -1;
     }
     return file_meta.getSize();
 }
 
-Prefix::Prefix(string prefix, bool leaf)
-{
+Prefix::Prefix(string prefix, bool leaf) {
     this->prefix = ndn::Name(prefix);
     this->leaf = leaf;
 }
 
 size_t
-  Prefix::operator()(const Prefix &p) const
-{
+Prefix::operator()(const Prefix &p) const {
     unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
     unsigned int hash = 0;
 
@@ -348,10 +338,19 @@ size_t
 }
 
 bool
-  Prefix::operator==(const Prefix &other_prefix) const
-{
+Prefix::operator==(const Prefix &other_prefix) const {
     cout << this->prefix << "                 " << other_prefix.prefix << "  "
          << this->prefix.equals(other_prefix.prefix) << endl;
     return this->prefix.equals(other_prefix.prefix) &&
            this->leaf == other_prefix.leaf;
+}
+
+void
+NameNode::printSegIndex(vector<SegIndex> si) {
+    for (auto item : si) {
+        for (auto ss : item.segs) {
+            cout << "Node=" << item.node << "  seg=" << ss.seg << " size=" << ss.size << endl;
+        }
+    }
+    return;
 }

@@ -6,12 +6,11 @@
 
 // 不建议使用
 void
-  writeThread(vector<DataNodeClient>::iterator it,
-              string name,
-              const char *content,
-              int size,
-              int seg)
-{
+writeThread(vector<DataNodeClient>::iterator it,
+            string name,
+            const char *content,
+            int size,
+            int seg) {
     int seg_size = fsndn::seg_size;
     char *temp_content = new char[size];
     memcpy(temp_content, content + (seg * seg_size), size);
@@ -21,12 +20,11 @@ void
 
 // 不建议使用
 void
-  readThread(vector<DataNodeClient>::iterator it,
-             string name,
-             char *buffer,
-             int get_size,
-             int get_seg)
-{
+readThread(vector<DataNodeClient>::iterator it,
+           string name,
+           char *buffer,
+           int get_size,
+           int get_seg) {
     int seg_size = fsndn::seg_size;
     char *temp_content = new char[get_size];
     (*it).getFileSeg(name, temp_content, get_size, get_seg);
@@ -35,12 +33,11 @@ void
 }
 
 void
-  writeFileThread(vector<DataNodeClient>::iterator it,
-                  string name,
-                  string file_path,
-                  int size,
-                  int seg)
-{
+writeFileThread(vector<DataNodeClient>::iterator it,
+                string name,
+                string file_path,
+                int size,
+                int seg) {
     int seg_size = fsndn::seg_size;
     // TODO: 此处 size 会有几率出现负数！！！
     FILE_LOG(LOG_DEBUG) << size << " !!!!!!!!!!!!!!!!!!!!!! \n";
@@ -56,13 +53,12 @@ void
 }
 
 void
-  readFileThread(vector<DataNodeClient>::iterator it,
-                 string name,
-                 char *buffer,
-                 int get_size,
-                 int get_seg,
-                 int node_seg_count)
-{
+readFileThread(vector<DataNodeClient>::iterator it,
+               string name,
+               char *buffer,
+               int get_size,
+               int get_seg,
+               int node_seg_count) {
     int seg_size = fsndn::seg_size;
     char *temp_content = new char[get_size];
     // TODO: 如果传输过程发生错误，此处如何进行处理？出错重传等
@@ -74,22 +70,20 @@ void
 Client::Client() {}
 
 int
-  Client::addNameNode(string ip, int node_id)
-{
+Client::addNameNode(string ip, int node_id) {
     NameNodeClient client(
-      grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
+            grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
     this->name_nodes.push_back(client);
     return 0;
 }
 
 int
-  Client::removeNameNode(int node_id)
-{
+Client::removeNameNode(int node_id) {
     vector<NameNodeClient>::iterator it =
-      find(name_nodes.begin(), name_nodes.end(), node_id);
+            find(name_nodes.begin(), name_nodes.end(), node_id);
     if (it == name_nodes.end()) {
         FILE_LOG(LOG_ERROR)
-          << "Remove NameNode failed, No NameNode named " << node_id << endl;
+            << "Remove NameNode failed, No NameNode named " << node_id << endl;
         return -1;
     }
     this->name_nodes.erase(it);
@@ -97,11 +91,10 @@ int
 }
 
 int
-  Client::addDataNode(string ip, int node_id)
-{
+Client::addDataNode(string ip, int node_id) {
     // TODO: 目前考虑的是单个namenode的情况。
     DataNodeClient client(
-      grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
+            grpc::CreateChannel(ip, grpc::InsecureChannelCredentials()), node_id);
     this->data_nodes.push_back(client);
     this->updateNodes();
     // 给NameNode添加该DataNode,目前认为只有一个NamenNode，所以直接选择0
@@ -110,13 +103,12 @@ int
 }
 
 int
-  Client::removeDataNode(int node_id)
-{
+Client::removeDataNode(int node_id) {
     vector<DataNodeClient>::iterator it =
-      find(data_nodes.begin(), data_nodes.end(), node_id);
+            find(data_nodes.begin(), data_nodes.end(), node_id);
     if (it == data_nodes.end()) {
         FILE_LOG(LOG_ERROR)
-          << "Remove DataNode failed, No DataNode named " << node_id << endl;
+            << "Remove DataNode failed, No DataNode named " << node_id << endl;
         return -1;
     }
     this->data_nodes.erase(it);
@@ -126,29 +118,27 @@ int
 
 // 不建议使用,因为很难能把一个大文件完整的存放到内存里面去
 int
-  Client::addNewFile(string name,
-                     const char *content,
-                     long long size,
-                     time_t mtime,
-                     time_t atime,
-                     time_t ctime)
-{
+Client::addNewFile(string name,
+                   const char *content,
+                   long long size,
+                   time_t mtime,
+                   time_t atime,
+                   time_t ctime) {
     // 访问名称节点，生成named data元数据信息并获得写入索引
     vector<SegIndex> store_segs;
-    store_segs =
-      this->name_nodes[0].addNewFile(name, size, mtime, atime, ctime);
+    this->name_nodes[0].addNewFile(name, size, mtime, atime, ctime, store_segs);
     // 文件分段信息已由NameNode生成，写入DataNode
     int seg_size = fsndn::seg_size;
     // TODO: 并行写入
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
-          find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+                find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
         for (SegWithSize ss : si.segs) {
             int insert_seg = ss.seg;
             int insert_size = ss.size;
             thread t(
-              writeThread, ref(it), name, content, insert_size, insert_seg);
+                    writeThread, ref(it), name, content, insert_size, insert_seg);
             t.join();
             //            writeThread(it, name, content, insert_size,
             //            insert_seg);
@@ -160,18 +150,17 @@ int
 
 // 不建议使用,因为很难能把一个大文件完整的存放到内存里面去
 int
-  Client::readFile(string name, char *buffer, long long size)
-{
+Client::readFile(string name, char *buffer, long long size) {
     // TODO:检索本地缓存
     // 向NameNode发送读请求，获得文件所在位置和分块信息
     vector<SegIndex> store_segs;
-    store_segs = this->name_nodes[0].readFile(name);
+    this->name_nodes[0].readFile(name, store_segs);
     // TODO:并行读取
     int seg_size = fsndn::seg_size;
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
-          find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+                find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
         for (SegWithSize ss : si.segs) {
             int get_seg = ss.seg;
             int get_size = ss.size;
@@ -184,18 +173,16 @@ int
 }
 
 void
-  Client::updateNodes()
-{
+Client::updateNodes() {
     sort(this->data_nodes.begin(), this->data_nodes.end());
 }
 
 int
-  Client::addNewFile(string name,
-                     string file_path,
-                     time_t mtime,
-                     time_t atime,
-                     time_t ctime)
-{
+Client::addNewFile(string name,
+                   string file_path,
+                   time_t mtime,
+                   time_t atime,
+                   time_t ctime) {
     ifstream fin(file_path, ios::binary | ios::in);
     // 检测文件打开成功与否，打开失败返回-1
     if (!fin) {
@@ -214,8 +201,7 @@ int
 
     // 步骤2：访问名称节点，生成named data元数据信息并获得写入索引
     vector<SegIndex> store_segs;
-    store_segs =
-      this->name_nodes[0].addNewFile(name, file_size, mtime, atime, ctime);
+    this->name_nodes[0].addNewFile(name, file_size, mtime, atime, ctime, store_segs);
 
     // 步骤3：文件分段信息已由NameNode生成，写入DataNode
     int seg_size = fsndn::seg_size;
@@ -223,7 +209,7 @@ int
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
-          find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+                find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
         for (SegWithSize ss : si.segs) {
             int insert_seg = ss.seg;
             int insert_size = ss.size;
@@ -254,8 +240,7 @@ int
 }
 
 int
-  Client::readFile(string name, string file_path)
-{
+Client::readFile(string name, string file_path) {
     // TODO: 检索本地缓存，如果存在本地缓存，则直接返回本地的缓存给用户
 
     //******************************************************************
@@ -274,7 +259,12 @@ int
 
     // 步骤3：向NameNode发送读请求，获得文件所在位置和分块信息
     vector<SegIndex> store_segs;
-    store_segs = this->name_nodes[0].readFile(name);
+    this->name_nodes[0].readFile(name, store_segs);
+    for (auto item: store_segs) {
+        for (auto ss : item.segs) {
+            cout << " client :" << item.node << " Seg=" << ss.seg << " Size=" << ss.size << endl;
+        }
+    }
 
     // 步骤4:并行读取
     ofstream fout(file_path, ios::binary);
@@ -282,7 +272,7 @@ int
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
-          find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
+                find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
         int node_seg_count = 0;
         long long curr_size = 0; // 当前读了多少字节
         int curr_seg = 0;        // 当前应当从哪一个段开始写

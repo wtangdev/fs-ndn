@@ -56,8 +56,8 @@ public:
     long long getFileSize(string name);
 
 private:
-    vector<DataNodeClient> data_nodes;
-    vector<NameNodeClient> name_nodes;
+    vector <DataNodeClient> data_nodes;
+    vector <NameNodeClient> name_nodes;
 
     void updateNodes();
 };

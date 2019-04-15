@@ -14,7 +14,7 @@ main()
     Log<Output2FILE>::reportingLevel() = LOG_DEBUG;
     Output2FILE::stream() = stdout;
     NameNodeSerImpl service;
-    string server_address("127.0.0.1:50005");
+    string server_address("hadoop-master:50005");
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());

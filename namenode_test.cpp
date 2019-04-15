@@ -10,8 +10,7 @@ using namespace std;
 const int fsndn::seg_size = 1048576; //
 
 int
-  main(int argc, char **argv)
-{
+main(int argc, char **argv) {
     time_t time1;
     //    DataNodeClient client(grpc::CreateChannel(
     //                              "localhost:50051",
@@ -21,67 +20,29 @@ int
     //    namenode.addDataNode("localhost:50051", 1001);
     //    namenode.addDataNode("localhost:50052", 1002);
     Client client;
-    client.addNameNode("127.0.0.1:50005", 2001);
-    client.addDataNode("localhost:50051", 1001);
-    client.addDataNode("localhost:50052", 1002);
+    client.addNameNode("hadoop-master:50005", 2001);
+    client.addDataNode("192.168.31.23:50051", 1001);
+//    client.addDataNode("hadoop-slave1:50051", 1001);
+//    client.addDataNode("localhost:50052", 1002);
     cout << "HelloWorld!\n";
 
-    string file_path = "/home/anson/Desktop/USTC.jpg";
-    string pict_path = "/home/anson/Desktop/pict.jpg";
-    string word_path = "/home/anson/Desktop/names_copy.txt";
-    int ret = 0;
     // 步骤1：发起命名数据写请求
-    /*
-    client.addNewFile("/c1/c2/c3/c4/c5/USTC.jpeg",
-                                file_path,
-                                time(&time1),
-                                time(&time1),
-                                time(&time1));
-    client.addNewFile("/c1/c2/c3/c4/c6/c5/USTC.jpeg",
-                      file_path,
-                      time(&time1),
-                      time(&time1),
-                      time(&time1));
-    */
-    ret = client.addNewFile(
-      "/a/b/c", word_path, time(&time1), time(&time1), time(&time1));
-    /*
-    client.addNewFile("/a/b/c/d/e/f/g/USTC.jpeg",
-                      pict_path,
-                      time(&time1),
-                      time(&time1),
-                      time(&time1));
+
     string name_path = "/home/anson/Desktop/names.txt";
+    string word_path = "/home/anson/Desktop/test.txt";
     ifstream fin(name_path, ios::binary | ios::in);
-    const char *str = "NEW STR";
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 100; i++) {
         string name = "/";
         string name1;
         fin >> name1;
         name += name1;
         client.addNewFile(
-          name, word_path, time(&time1), time(&time1), time(&time1));
+                name, word_path, time(&time1), time(&time1), time(&time1));
     }
-
     fin.close();
 
-    */
-    if (ret != -1) {
-        // 步骤1：发起命名数据读请求
-        client.readFile("/c1/c2/c3/c4/c5/USTC.jpeg",
-                        "/home/anson/Desktop/newUSTC.jpg");
-        string test = "/a/b/c";
-        string test1 =
-          "/linkinghub.elsevier.com/retrieve/pii/S1050464810002901";
-        string test2 = "/openurl.ingenta.com/content/"
-                       "xref?genreequalsarticle&issnequals1357-1559&"
-                       "volumeequals16&issueequals1&spageequals24";
-        cout << client.readFile(test, "/home/anson/Desktop/test.txt") << endl;
-        //        cout << client.readFile(test1,
-        //        "/home/anson/Desktop/test1.txt") << endl; cout <<
-        //        client.readFile(test2, "/home/anson/Desktop/test2.txt") <<
-        //        endl;
-    }
+    // 步骤1：发起命名数据读请求
+
     /*
 //    ifstream fin("/home/anson/Desktop/ustc.jpg", ios::binary | ios::in);
     ifstream fin("/home/anson/Desktop/manjaro.iso", ios::binary | ios::in);
