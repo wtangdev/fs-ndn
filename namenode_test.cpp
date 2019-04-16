@@ -21,15 +21,23 @@ main(int argc, char **argv) {
     //    namenode.addDataNode("localhost:50052", 1002);
     Client client;
     client.addNameNode("hadoop-master:50005", 2001);
-    client.addDataNode("192.168.31.23:50051", 1001);
-//    client.addDataNode("hadoop-slave1:50051", 1001);
-//    client.addDataNode("localhost:50052", 1002);
+    client.addDataNode("hadoop-slave1:50051", 1001);
+    client.addDataNode("hadoop-slave2:50052", 1002);
     cout << "HelloWorld!\n";
 
     // 步骤1：发起命名数据写请求
-
+    string ustc_path = "/home/anson/Desktop/USTC.jpg";
     string name_path = "/home/anson/Desktop/names.txt";
     string word_path = "/home/anson/Desktop/test.txt";
+    string iso_path = "/home/anson/Desktop/ubuntu.iso";
+
+    string ustc_name = "/a/b/c/USTC.jpg";
+    string iso_name = "/a/b/c/ubuntu.iso";
+
+//    client.addNewFile(ustc_name, ustc_path, time(&time1), time(&time1), time(&time1));
+//    client.addNewFile(iso_name, iso_path,  time(&time1), time(&time1), time(&time1));
+
+//    client.readFile(ustc_name, ustc_path+"_test.jpg");
     ifstream fin(name_path, ios::binary | ios::in);
     for (int i = 0; i < 100; i++) {
         string name = "/";

@@ -74,7 +74,7 @@ FileBlock::write(const char *content, int size) {
         // 如果写的是查找出来的空闲文件，那么该文件需要被更新
         FileBlock::updateSpaceTable(this->path, size);
     }
-    ofstream fout(this->path, ios::binary | ios::in | ios::out);    // 如果该文件实现不存在的话会新建，存在则会覆盖
+    ofstream fout(this->path, ios::binary | ios::in | ios::out);
     // 移动偏移量,如果是新建的文件，偏移量就会是0
     fout.seekp(offset);
     this->offset = offset;

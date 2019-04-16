@@ -155,7 +155,7 @@ NameNode::addNewFile(string name,
           this->data_nodes[seg % nodes_count].getNodeId(), seg, seg_size);
         seg++;
     }
-    // 把最后一点放进去
+//     把最后一点放进去
     new_file.addUseNodes(this->data_nodes[seg % nodes_count].getNodeId(),
                          seg,
                          size - (seg * seg_size));
@@ -163,7 +163,7 @@ NameNode::addNewFile(string name,
     this->files.push_back(new_file);
     this->updateNodes();
     store_segs = new_file.getUseNodes();
-     */
+    */
 }
 
 /*
@@ -236,7 +236,6 @@ NameNode::addNewFile(string name, const char* content, long long size)
     return 0;
 }
 */
-
 int
 NameNode::readFile(string name, vector<SegIndex> &seg_index) {
     //    vector<SegIndex> seg_index;

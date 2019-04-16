@@ -24,8 +24,10 @@ include_directories(${PROTO_SRC_DIR})
 
 # for fsndn
 set(FS_FILES fs.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
-set(NAMENODE_TEST_FILES namenode_test.cpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(NDDFS_FILES nddfs.cpp Client/clientserver.hpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(CLIENT_SERVER_FILES Client/clientserver.cpp Client/clientserver.hpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
 set(NAME_FILES name.cpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
+set(NAMENODE_TEST_FILES namenode_test.cpp Client/clientserver.hpp Client/client.h Client/client.cpp NameNode/namenodeserver.hpp NameNode/namenodeserver.cpp NameNode/namenodeclient.hpp NameNode/namenodeclient.cpp DataNode/datanodeserver.cpp DataNode/datanodeserver.hpp NameNode/namenode.hpp NameNode/namenode.cpp NameNode/filemeta.hpp NameNode/filemeta.cpp DataNode/datanodeclient.cpp fs.hpp INode/inode.cpp INode/inode.hpp INode/inodedirectory.cpp INode/inodedirectory.hpp logger.hpp INode/inodefile.cpp INode/inodefile.hpp DataNode/datanode.cpp DataNode/datanode.hpp INode/fileblock.cpp INode/fileblock.hpp )
 # add_executable(fs ${SOURCE_FILES})
 
 include_directories(/usr/local/include)
@@ -75,13 +77,13 @@ target_link_libraries(fs
 )
 
 # Building client
-add_executable(namenode_test
-    ${CMAKE_CURRENT_SOURCE_DIR}/namenode_test.cpp
+add_executable(clientserver
+    ${CMAKE_CURRENT_SOURCE_DIR}/Client/clientserver.cpp
     ${PROTO_SRCS}
     ${GRPC_SRCS}
-    ${NAMENODE_TEST_FILES}
+    ${CLIENT_SERVER_FILES}
 )
-target_link_libraries(namenode_test
+target_link_libraries(clientserver
     gRPC::grpc++_reflection
     protobuf::libprotobuf
     ${NDN_LIBRARY}
@@ -102,7 +104,32 @@ target_link_libraries(name
     ${CONFIG++_LIBRARY}
 )
 
-# Building test
+# Building nddfs
+add_executable(nddfs
+    ${CMAKE_CURRENT_SOURCE_DIR}/nddfs.cpp
+    ${PROTO_SRCS}
+    ${GRPC_SRCS}
+    ${NDDFS_FILES}
+)
+target_link_libraries(nddfs
+    gRPC::grpc++_reflection
+    protobuf::libprotobuf
+    ${NDN_LIBRARY}
+    ${CONFIG++_LIBRARY}
+)
 
+# Building test
+add_executable(namenode_test
+    ${CMAKE_CURRENT_SOURCE_DIR}/namenode_test.cpp
+    ${PROTO_SRCS}
+    ${GRPC_SRCS}
+    ${NAMENODE_TEST_FILES}
+)
+target_link_libraries(namenode_test
+    gRPC::grpc++_reflection
+    protobuf::libprotobuf
+    ${NDN_LIBRARY}
+    ${CONFIG++_LIBRARY}
+)
 # target_link_libraries(fs PUBLIC ${NDN_LIBRARY})
 #target_link_libraries(test PUBLIC ${NDN_LIBRARY})
