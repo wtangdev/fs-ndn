@@ -7,7 +7,8 @@
 
 #include "../fs.hpp"
 
-#define  MAX_TEXT 256
+#define BACK_LOG 1000
+#define BUFFER_SIZE 2048
 std::string path = "./namo_amitabha";
 
 const int fsndn::seg_size = 1048576; //
@@ -19,12 +20,23 @@ enum commands{
 commands
 getCommand(std::string command);
 
-// 需要根据收到了指令来联系 NameNode 和 DataNode
 void
-handle(int msgid, const char *buffer);
+handleError(std::string msg); //错误处理函数
 
 void
-deleteMsg(int msgid);
+bindToAddress(int serverSocket); //将socket与某个地址绑定
+
+void
+getBuffer(int socket, char * buffer);
+
+// 需要根据收到了指令来联系 NameNode 和 DataNode
+void
+handle(int socket, const char *buffer);
+
+void
+handleRequest(int serverSocket, char * buffer);
+
+
 
 inline void
 getComponent(const char * buffer ,std::vector<std::string> &components) {

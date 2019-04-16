@@ -1,116 +1,68 @@
-//
-// Created by anson on 4/16/19.
-//
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <string.h>
-#include <stdbool.h>
-#include <errno.h>
 #include <unistd.h>
-#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/msg.h>
 #include "clientserver.hpp"
-#include "client.h"
-#include "../NameNode/namenode.hpp"
 #include "../fs.hpp"
-#include "iostream"
-#include "../logger.hpp"
-#include "unistd.h"
-
+#include "client.h"
 
 using namespace std;
 
-time_t time1;
+
+struct msg_st
+{
+    long int msg_type;
+    char text[MAX_TEXT];
+};
+
 Client client;
+time_t time1;
 
-int
-main(void) {
-    // 添加 socket 监听
-    int serverSocket = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (serverSocket == -1) {
-        handleError("创建socket失败");
-    }
-    bindToAddress(serverSocket);
-    if (listen(serverSocket, BACK_LOG) == -1) {//转为被动模式
-        handleError("监听失败");
-    }
-
-    // 添加客户端
+int main()
+{
     client.addNameNode("hadoop-master:50005", 2001);
     client.addDataNode("hadoop-slave1:50051", 1001);
     client.addDataNode("hadoop-slave2:50052", 1002);
 
-    cout << "HelloWorld!\n";
-    while (true) {
-        char *buffer = new char[BUFFER_SIZE];
-        handleRequest(serverSocket, buffer);
-        delete[] buffer;
+    int running = 1;
+    int msgid = -1;
+    struct msg_st data;
+    long int msgtype = 0; //注意1
+
+    //建立消息队列
+    msgid = msgget((key_t)1234, 0666 | IPC_CREAT);
+    if(msgid == -1)
+    {
+        fprintf(stderr, "msgget failed with error: %d\n", errno);
+        exit(EXIT_FAILURE);
     }
+    //从队列中获取消息，直到遇到end消息为止
+    while(running)
+    {
+        if(msgrcv(msgid, (void*)&data, MAX_TEXT, msgtype, 0) == -1)
+        {
+//            fprintf(stderr, "msgrcv failed with errno: %d\n", errno);
+            exit(EXIT_FAILURE);
+        }
+        handle(msgid, data.text);
+        //遇到end结束
+    }
+    //删除消息队列
+
 }
 
 void
-handleRequest(int serverSocket, char *buffer) {
-    int socket = accept(serverSocket, NULL, NULL);//监听客户端的请求，没有请求到来的话会一直阻塞
-    if (socket == -1) {
-        handleError("accept 错误");
-    }
-    cout << "client发起连接..." << endl;
-    getBuffer(socket, buffer);
-}
-
-void
-handleError(string msg) { //错误处理函数
-    cout << msg << endl;
-    exit(-1);
-}
-
-void
-bindToAddress(int serverSocket) { //将socket与某个地址绑定
-    struct sockaddr_un address;
-    address.sun_family = AF_UNIX;//使用Unix domain
-    strncpy(address.sun_path, path.c_str(), sizeof(path));//这个地址的类型有3种，参考上文所说，这里我们使用“系统路径”这一类型
-    if (remove(path.c_str()) == -1 && errno != ENOENT) { //绑定之前先要将这个路径对应的文件删除，否则会报EADDRINUSE
-        handleError("删除失败");
-    }
-    if (bind(serverSocket, (struct sockaddr *) &address, sizeof(address)) == -1) {
-        handleError("地址绑定失败");
-    }
-}
-
-void
-getBuffer(int socket, char *buffer) {
-    int numberOfReaded, numberOfWrited = 0;
-//    while (true) {
-    memset(buffer, BUFFER_SIZE, '\0');
-    numberOfReaded = recv(socket, buffer, BUFFER_SIZE, 0);//读取客户端进程发送的数据
-    cout << buffer << endl;
-    if (numberOfReaded == -1) {
-        handleError("读取数据错误");
-    } else if (numberOfReaded == 0) {
-        cout << "客户端关闭连接\n";
-        close(socket);
-        return;
-    }
-    if (numberOfReaded > 0) {
-        buffer[numberOfReaded] = '\0';
-        handle(socket, buffer);
-        cout << "收到对端进程数据长度为" << numberOfReaded << "开始echo" << endl;
-//            numberOfWrited = write(socket, buffer, numberOfReaded);//然后原版返回
-//            cout<< "  写入的结果为"<< numberOfWrited<< endl;
-    }
-//    }
-}
-
-void
-handle(int socket, const char *buffer) {
+handle(int msgid, const char *buffer) {
     vector<string> components;
     getComponent(buffer, components);
     commands command = getCommand(components[0]);
     string response;
+    msg_st reply;
     switch (command) {
         case QUIT:
+            deleteMsg(msgid);
             break;
         case READ:
             if (components.size() != 3) {
@@ -119,7 +71,9 @@ handle(int socket, const char *buffer) {
                 response = "Read Sucess!";
                 client.readFile(components[1], components[2]);
             }
-            write(socket, response.c_str(), response.size());
+            strcpy(reply.text, response.c_str());
+            reply.msg_type = 1;
+            msgsnd(msgid, (void *)&reply, 30, 0);
             break;
         case WRITE:
             if (components.size() != 3) {
@@ -128,7 +82,9 @@ handle(int socket, const char *buffer) {
                 response = "Write Sucess!";
                 client.addNewFile(components[1], components[2], time(&time1), time(&time1), time(&time1));
             }
-            write(socket, response.c_str(), response.size());
+            strcpy(reply.text, response.c_str());
+            reply.msg_type = 1;
+            msgsnd(msgid, (void *)&reply, 30, 0);
             break;
         default:
             break;
@@ -163,4 +119,14 @@ getCommand(string command) {
     else if (strcmp(command.c_str(), "rmdir") == 0)
         o = RMDIR;
     return o;
+}
+
+void
+deleteMsg(int msgid) {
+    if(msgctl(msgid, IPC_RMID, 0) == -1)
+    {
+//        fprintf(stderr, "msgctl(IPC_RMID) failed\n");
+        exit(EXIT_FAILURE);
+    }
+    exit(EXIT_SUCCESS);
 }
