@@ -257,6 +257,15 @@ long long
 }
 
 int
+DataNodeClient::quit() {
+    EmptyRequest request;
+    IntReply reply;
+    ClientContext context;
+    Status status = stub_->Quit(&context, request, &reply);
+    return reply.result();
+}
+
+int
   DataNodeClient::getNodeId()
 {
     return node_id;

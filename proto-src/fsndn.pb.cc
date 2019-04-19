@@ -422,7 +422,7 @@ const char descriptor_table_protodef_fsndn_2eproto[] =
   "seg\030\003 \001(\005\"\016\n\014EmptyRequest\"\032\n\010IntReply\022\016\n"
   "\006result\030\001 \001(\021\"\033\n\tLongReply\022\016\n\006result\030\001 \001"
   "(\003\"\033\n\tReadReply\022\016\n\006buffer\030\001 \001(\014\"!\n\rChild"
-  "renReply\022\020\n\010children\030\001 \003(\t2\276\006\n\013DataNodeS"
+  "renReply\022\020\n\010children\030\001 \003(\t2\370\006\n\013DataNodeS"
   "er\022G\n\014AddEmptyFile\022\037.fsndnproto.AddEmpty"
   "FileRequest\032\024.fsndnproto.IntReply\"\000\022C\n\nA"
   "ddNewFile\022\035.fsndnproto.AddNewFileRequest"
@@ -443,13 +443,14 @@ const char descriptor_table_protodef_fsndn_2eproto[] =
   "G\n\016GetAllChildren\022\030.fsndnproto.EmptyRequ"
   "est\032\031.fsndnproto.ChildrenReply\"\000\022A\n\014GetS"
   "paceSize\022\030.fsndnproto.EmptyRequest\032\025.fsn"
-  "dnproto.LongReply\"\000B\022\n\020io.grpc.examplesb"
-  "\006proto3"
+  "dnproto.LongReply\"\000\0228\n\004Quit\022\030.fsndnproto"
+  ".EmptyRequest\032\024.fsndnproto.IntReply\"\000B\022\n"
+  "\020io.grpc.examplesb\006proto3"
   ;
 ::google::protobuf::internal::DescriptorTable descriptor_table_fsndn_2eproto = {
   false, InitDefaults_fsndn_2eproto, 
   descriptor_table_protodef_fsndn_2eproto,
-  "fsndn.proto", &assign_descriptors_table_fsndn_2eproto, 1527,
+  "fsndn.proto", &assign_descriptors_table_fsndn_2eproto, 1585,
 };
 
 void AddDescriptors_fsndn_2eproto() {

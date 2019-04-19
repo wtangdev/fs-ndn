@@ -447,7 +447,7 @@ const char descriptor_table_protodef_namenode_2eproto[] =
   "\005\"B\n\010SegIndex\022\014\n\004node\030\001 \001(\005\022(\n\004segs\030\002 \003("
   "\0132\032.namenodeproto.SegWithSize\"7\n\rSegInde"
   "xReply\022&\n\005index\030\001 \003(\0132\027.namenodeproto.Se"
-  "gIndex2\225\004\n\013NameNodeSer\022N\n\nAddNewFile\022 .n"
+  "gIndex2\325\004\n\013NameNodeSer\022N\n\nAddNewFile\022 .n"
   "amenodeproto.AddNewFileRequest\032\034.namenod"
   "eproto.SegIndexReply\"\000\022D\n\007DelFile\022\036.name"
   "nodeproto.FileNameRequest\032\027.namenodeprot"
@@ -460,13 +460,14 @@ const char descriptor_table_protodef_namenode_2eproto[] =
   "aNode\022 .namenodeproto.AddDataNodeRequst\032"
   "\027.namenodeproto.IntReply\"\000\022J\n\013RemDataNod"
   "e\022 .namenodeproto.RemDataNodeRequst\032\027.na"
-  "menodeproto.IntReply\"\000B\022\n\020io.grpc.exampl"
-  "esb\006proto3"
+  "menodeproto.IntReply\"\000\022>\n\004Quit\022\033.namenod"
+  "eproto.EmptyRequest\032\027.namenodeproto.IntR"
+  "eply\"\000B\022\n\020io.grpc.examplesb\006proto3"
   ;
 ::google::protobuf::internal::DescriptorTable descriptor_table_namenode_2eproto = {
   false, InitDefaults_namenode_2eproto, 
   descriptor_table_protodef_namenode_2eproto,
-  "namenode.proto", &assign_descriptors_table_namenode_2eproto, 1210,
+  "namenode.proto", &assign_descriptors_table_namenode_2eproto, 1274,
 };
 
 void AddDescriptors_namenode_2eproto() {

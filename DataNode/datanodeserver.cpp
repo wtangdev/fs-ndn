@@ -224,3 +224,11 @@ grpc::Status
     response->set_result(space_size);
     return Status::OK;
 }
+
+Status
+DataNodeSerImpl::Quit(ServerContext *context, const EmptyRequest * requset,
+        IntReply * response) {
+    response->set_result(0);
+    exit(0);
+    return Status();
+}

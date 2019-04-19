@@ -13,6 +13,11 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/name.hpp>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 namespace fsndn {
     extern int user_id;
@@ -81,6 +86,10 @@ inline int name2path(const std::string &name, std::string &path)
 
     return 0;
 }
+
+
+
+
 
 
 #endif //FS_NDN_FS_HPP

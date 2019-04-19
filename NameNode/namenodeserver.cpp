@@ -130,3 +130,12 @@ NameNodeSerImpl::GetFileSize(grpc::ServerContext *context,
     response->set_result(size);
     return Status::OK;
 }
+
+Status
+NameNodeSerImpl::Quit(grpc::ServerContext *context,
+                      const namenodeproto::EmptyRequest *request,
+                      namenodeproto::IntReply *respone) {
+    respone->set_result(0);
+    exit(0);
+    return Status::OK;
+}

@@ -36,6 +36,8 @@ public:
 
     long long getFileSize(const string &name);
 
+    void quit();
+
     bool operator==(const int &other_node_id) const;
 
 private:

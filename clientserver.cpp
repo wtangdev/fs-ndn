@@ -1,22 +1,26 @@
-//
-// Created by anson on 19-2-24.
-//
-
+#include "clientserver.hpp"
+#include "Client/client.h"
 #include "fs.hpp"
-#include "DataNode/datanode.hpp"
-#include "DataNode/datanodeserver.hpp"
-#include "fstream"
-#include "libconfig.h++"
 #include "logger.hpp"
-#include "ostream"
-#include "stdio.h"
-#include "unistd.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/msg.h>
+#include <unistd.h>
 
 using namespace std;
-using namespace libconfig;
 
+struct msg_st
+{
+    long int msg_type;
+    char text[MAX_TEXT];
+};
+
+Client client;
 time_t time1;
-
+ndn::Name fsndn::certificateName;
+ndn::ptr_lib::shared_ptr<ndn::KeyChain> fsndn::keyChain; // 智能指针
 static uint8_t DEFAULT_RSA_PUBLIC_KEY_DER[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
     0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00,
@@ -148,70 +152,227 @@ static uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
     0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-int fsndn::user_id;
-int fsndn::group_id;
-int fsndn::fsndn_id = 666;
-string fsndn::root_path;
-string fsndn::global_prefix;
-const int fsndn::seg_size = 1048576; //
+bool need_sign = true;
 
-void
-init_daemon(std::string dir);
-
+// 主函数，循环等待接收来自./nddfs 的指令
 int
 main(int argc, char *argv[])
 {
-    cout << "You can use -d to make nddfs run as daemon." << endl
-         << "make sure you have rad README.md and offer a correct fsndn.conf."
-         << endl;
-    FILE_LOG(LOG_DEBUG) << "FS-NDN: version 0.1" << endl;
-    fsndn::user_id = getuid();
-    fsndn::group_id = getgid();
-
-    Config cfg;
-    cfg.readFile("./fsndn.conf");
-    string addr = cfg.lookup("server.addr");
-    cfg.lookupValue("server.root_path", fsndn::root_path);
-    cfg.lookupValue("server.global_prefix", fsndn::global_prefix);
-    //    cfg.lookupValue("server.seg_size", fsndn::seg_size);
-
-    FILE_LOG(LOG_DEBUG) << "FS-NDN: prefix " << fsndn::global_prefix << endl;
-    FILE_LOG(LOG_DEBUG) << "FS-NDN: root path " << fsndn::root_path << endl;
-    Log<Output2FILE>::reportingLevel() = LOG_DEBUG;
-
-    // 根据系统是否需要运行在后台设置日志记录位置
+    if (argc < 2) {
+        cout << "Usage: ./clientserver [-d, -nd](Running as Deamon or not) "
+                "[-s, -ns](Need Sign or not)"
+             << endl;
+        exit(0);
+    }
     if (argc >= 2 && strcmp(argv[1], "-d") == 0) {
-        // 以守护进程的形式运行
-        init_daemon("/tmp");
-        // 在后台运行
         FILE_LOG(LOG_DEBUG) << "Running as daemon" << endl;
-        FILE_LOG(LOG_DEBUG) << "Log is saved at ../fs.log" << endl;
-        FILE *log_fd = fopen("/home/anson/Documents/conf/fs.log", "w");
+        FILE_LOG(LOG_DEBUG) << "log is save to client_server.log" << endl;
+        init_daemon("/tmp");
+        FILE *log_fd = fopen(
+          "/home/anson/Documents/Code/fs-ndn/build/client_server.log", "w");
         if (log_fd == NULL) {
             Output2FILE::stream() = stdout;
         } else {
             Output2FILE::stream() = log_fd;
         }
     }
+    if (argc >= 3 && strcmp(argv[2], "-ns") == 0) {
+        cout << "Do Not Sign" << endl;
+        need_sign = false;
+    } else {
+        cout << "Using signature" << endl;
+    }
 
-    DataNodeSerImpl service((long long) 1024 * 1024 * 1024 * 10);
-    string server_address(addr);
-    ServerBuilder builder;
-    // Listen on the given address without any authentication mechanism.
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    // Register "service" as the instance through which we'll communicate with
-    // clients. In this case it corresponds to an *synchronous* service.
-    builder.RegisterService(&service);
-    // Finally assemble the server.
-    std::unique_ptr<Server> server(builder.BuildAndStart());
-    FILE_LOG(LOG_DEBUG) << "Server listening on " << server_address
-                        << std::endl;
+    // 注意添加顺序不能变
+    client.addNameNode("hadoop-master:50005", 2001);
+    client.addDataNode("hadoop-slave1:50051", 1001);
+    client.addDataNode("hadoop-slave2:50052", 1002);
 
-    // Wait for the server to shutdown. Note that some other thread must be
-    // responsible for shutting down the server for this call to ever return.
-    server->Wait();
+    // 配置签名
+    ndn::ptr_lib::shared_ptr<ndn::MemoryIdentityStorage> identityStorage(
+      new ndn::MemoryIdentityStorage());
+    ndn::ptr_lib::shared_ptr<ndn::MemoryPrivateKeyStorage> privateKeyStorage(
+      new ndn::MemoryPrivateKeyStorage());
+    fsndn::keyChain.reset(
+      new ndn::KeyChain(ndn::ptr_lib::make_shared<ndn::IdentityManager>(
+                          identityStorage, privateKeyStorage),
+                        ndn::ptr_lib::shared_ptr<ndn::NoVerifyPolicyManager>(
+                          new ndn::NoVerifyPolicyManager())));
 
-    return 0;
+    ndn::Name keyName("/testname/DSK-123");
+    fsndn::certificateName = keyName.getSubName(0, keyName.size() - 1)
+                               .append("KEY")
+                               .append(keyName.get(keyName.size() - 1))
+                               .append("ID-CERT")
+                               .append("0");
+    identityStorage->addKey(keyName,
+                            ndn::KEY_TYPE_RSA,
+                            ndn::Blob(DEFAULT_RSA_PUBLIC_KEY_DER,
+                                      sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
+    privateKeyStorage->setKeyPairForKeyName(
+      keyName,
+      ndn::KEY_TYPE_RSA,
+      DEFAULT_RSA_PUBLIC_KEY_DER,
+      sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
+      DEFAULT_RSA_PRIVATE_KEY_DER,
+      sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+
+    int running = 1;
+    int msgid = -1;
+    struct msg_st data;
+    long int msgtype = 0; //注意1
+
+    //建立消息队列
+    msgid = msgget((key_t) 1234, 0666 | IPC_CREAT);
+    if (msgid == -1) {
+        fprintf(stderr, "msgget failed with error: %d\n", errno);
+        exit(EXIT_FAILURE);
+    }
+
+    //从队列中获取消息，直到遇到end消息为止
+    while (running) {
+        if (msgrcv(msgid, (void *) &data, MAX_TEXT, msgtype, 0) == -1) {
+            //            fprintf(stderr, "msgrcv failed with errno: %d\n",
+            //            errno);
+            exit(EXIT_FAILURE);
+        }
+        handle(msgid, data.text);
+        //遇到end结束
+    }
+    //删除消息队列
+}
+
+// 处理接收到的指令
+void
+handle(int msgid, const char *buffer)
+{
+    vector<string> components;
+    getComponent(buffer, components);
+    commands command = getCommand(components[0]);
+    string response;
+    int response_size = 30;
+    msg_st reply;
+    switch (command) {
+        case QUIT:
+            deleteMsg(msgid);
+            break;
+        case READ:
+            if (components.size() != 3) {
+                response = "Parameter Error!";
+                response_size = 17;
+            } else {
+                int ret = 0;
+                if (need_sign) {
+                    ret = client.readFileSign(components[1], components[2]);
+                } else {
+                    ret = client.readFile(components[1], components[2]);
+                }
+                if (ret == 0) {
+                    response = "Read Sucess!";
+                    response_size = 13;
+                } else if (ret == -1) {
+                    response = "Read Error " + components[1] + " is not exists";
+                    response_size = 256;
+                }
+            }
+            break;
+        case WRITE:
+            if (components.size() != 3) {
+                response = "Parameter Error!";
+                response_size = 17;
+            } else {
+                int ret = 0;
+                if (need_sign) {
+                    ret = client.addNewFileSign(components[1],
+                                                components[2],
+                                                time(&time1),
+                                                time(&time1),
+                                                time(&time1));
+                } else {
+                    ret = client.addNewFile(components[1],
+                                            components[2],
+                                            time(&time1),
+                                            time(&time1),
+                                            time(&time1));
+                }
+                if (ret == 0) {
+                    response = "Write Sucess!";
+                    response_size = 14;
+                } else if (ret == -1) {
+                    response =
+                      "Write Error, " + components[2] + " is not exists";
+                    response_size = 256;
+                } else if (ret == -2) {
+                    response =
+                      "Write Error, " + components[1] + " is already exists";
+                    response_size = 256;
+                }
+            }
+            break;
+        case STOP:
+            client.quitDatanode();
+            client.quitNamenode();
+            response = "Stop All DataNodes and NameNodes!";
+            response_size = 34;
+            break;
+        default:
+            response =
+              "Usage: \"./nddfs [write, read] file_name, file_path\" For write or read file into or from nddfs\n"
+              "Usage: \"./nddfs stop\" To stop all DataNodes and NameNodes\n"
+              "Usage: \"./nddfs quit\" To quit clientsrver\n";
+            response_size = 195;
+            break;
+    }
+    strcpy(reply.text, response.c_str());
+    reply.msg_type = 1;
+    msgsnd(msgid, (void *) &reply, response_size, 0);
+}
+
+commands
+getCommand(string command)
+{
+    commands o = DEFAULT;
+    if (strcmp(command.c_str(), "quit") == 0)
+        o = QUIT;
+    else if (strcmp(command.c_str(), "send") == 0)
+        o = SEND;
+    else if (strcmp(command.c_str(), "getattr") == 0)
+        o = GETATTR;
+    else if (strcmp(command.c_str(), "open") == 0)
+        o = OPEN;
+    else if (strcmp(command.c_str(), "read") == 0)
+        o = READ;
+    else if (strcmp(command.c_str(), "write") == 0)
+        o = WRITE;
+    else if (strcmp(command.c_str(), "release") == 0)
+        o = RELEASE;
+    else if (strcmp(command.c_str(), "mknod") == 0)
+        o = MKNOD;
+    else if (strcmp(command.c_str(), "rm") == 0)
+        o = RM;
+    else if (strcmp(command.c_str(), "mkdir") == 0)
+        o = MKDIR;
+    else if (strcmp(command.c_str(), "readdir") == 0)
+        o = READDIR;
+    else if (strcmp(command.c_str(), "rmdir") == 0)
+        o = RMDIR;
+    else if (strcmp(command.c_str(), "stop") == 0)
+        o = STOP;
+    return o;
+}
+
+void
+deleteMsg(int msgid)
+{
+    // 注意删除顺序不能变
+    client.removeDataNode(1001);
+    client.removeDataNode(1002);
+    client.removeNameNode(2001);
+    if (msgctl(msgid, IPC_RMID, 0) == -1) {
+        //        fprintf(stderr, "msgctl(IPC_RMID) failed\n");
+        exit(EXIT_FAILURE);
+    }
+    exit(EXIT_SUCCESS);
 }
 
 void

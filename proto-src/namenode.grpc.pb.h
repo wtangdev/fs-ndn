@@ -88,6 +88,13 @@ class NameNodeSer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>> PrepareAsyncRemDataNode(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>>(PrepareAsyncRemDataNodeRaw(context, request, cq));
     }
+    virtual ::grpc::Status Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::namenodeproto::IntReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>> AsyncQuit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>>(AsyncQuitRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>> PrepareAsyncQuit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>>(PrepareAsyncQuitRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
@@ -106,6 +113,8 @@ class NameNodeSer final {
       virtual void AddDataNode(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void RemDataNode(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void RemDataNode(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Quit(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
@@ -123,6 +132,8 @@ class NameNodeSer final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>* PrepareAsyncAddDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::AddDataNodeRequst& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>* AsyncRemDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>* PrepareAsyncRemDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>* AsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::namenodeproto::IntReply>* PrepareAsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -176,6 +187,13 @@ class NameNodeSer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>> PrepareAsyncRemDataNode(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>>(PrepareAsyncRemDataNodeRaw(context, request, cq));
     }
+    ::grpc::Status Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::namenodeproto::IntReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>> AsyncQuit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>>(AsyncQuitRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>> PrepareAsyncQuit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>>(PrepareAsyncQuitRaw(context, request, cq));
+    }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
@@ -193,6 +211,8 @@ class NameNodeSer final {
       void AddDataNode(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) override;
       void RemDataNode(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) override;
       void RemDataNode(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) override;
+      void Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) override;
+      void Quit(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)>) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -218,6 +238,8 @@ class NameNodeSer final {
     ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* PrepareAsyncAddDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::AddDataNodeRequst& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* AsyncRemDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* PrepareAsyncRemDataNodeRaw(::grpc::ClientContext* context, const ::namenodeproto::RemDataNodeRequst& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* AsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* PrepareAsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_AddNewFile_;
     const ::grpc::internal::RpcMethod rpcmethod_DelFile_;
     const ::grpc::internal::RpcMethod rpcmethod_DelDir_;
@@ -225,6 +247,7 @@ class NameNodeSer final {
     const ::grpc::internal::RpcMethod rpcmethod_ReadFromFile_;
     const ::grpc::internal::RpcMethod rpcmethod_AddDataNode_;
     const ::grpc::internal::RpcMethod rpcmethod_RemDataNode_;
+    const ::grpc::internal::RpcMethod rpcmethod_Quit_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -240,6 +263,7 @@ class NameNodeSer final {
     virtual ::grpc::Status ReadFromFile(::grpc::ServerContext* context, const ::namenodeproto::ReadRequest* request, ::namenodeproto::SegIndexReply* response);
     virtual ::grpc::Status AddDataNode(::grpc::ServerContext* context, const ::namenodeproto::AddDataNodeRequst* request, ::namenodeproto::IntReply* response);
     virtual ::grpc::Status RemDataNode(::grpc::ServerContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response);
+    virtual ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_AddNewFile : public BaseClass {
@@ -381,7 +405,27 @@ class NameNodeSer final {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_AddNewFile<WithAsyncMethod_DelFile<WithAsyncMethod_DelDir<WithAsyncMethod_GetFileSize<WithAsyncMethod_ReadFromFile<WithAsyncMethod_AddDataNode<WithAsyncMethod_RemDataNode<Service > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_Quit() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestQuit(::grpc::ServerContext* context, ::namenodeproto::EmptyRequest* request, ::grpc::ServerAsyncResponseWriter< ::namenodeproto::IntReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_AddNewFile<WithAsyncMethod_DelFile<WithAsyncMethod_DelDir<WithAsyncMethod_GetFileSize<WithAsyncMethod_ReadFromFile<WithAsyncMethod_AddDataNode<WithAsyncMethod_RemDataNode<WithAsyncMethod_Quit<Service > > > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_AddNewFile : public BaseClass {
    private:
@@ -557,7 +601,32 @@ class NameNodeSer final {
     }
     virtual void RemDataNode(::grpc::ServerContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
-  typedef ExperimentalWithCallbackMethod_AddNewFile<ExperimentalWithCallbackMethod_DelFile<ExperimentalWithCallbackMethod_DelDir<ExperimentalWithCallbackMethod_GetFileSize<ExperimentalWithCallbackMethod_ReadFromFile<ExperimentalWithCallbackMethod_AddDataNode<ExperimentalWithCallbackMethod_RemDataNode<Service > > > > > > > ExperimentalCallbackService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_Quit() {
+      ::grpc::Service::experimental().MarkMethodCallback(7,
+        new ::grpc::internal::CallbackUnaryHandler< ::namenodeproto::EmptyRequest, ::namenodeproto::IntReply>(
+          [this](::grpc::ServerContext* context,
+                 const ::namenodeproto::EmptyRequest* request,
+                 ::namenodeproto::IntReply* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   return this->Quit(context, request, response, controller);
+                 }));
+    }
+    ~ExperimentalWithCallbackMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  typedef ExperimentalWithCallbackMethod_AddNewFile<ExperimentalWithCallbackMethod_DelFile<ExperimentalWithCallbackMethod_DelDir<ExperimentalWithCallbackMethod_GetFileSize<ExperimentalWithCallbackMethod_ReadFromFile<ExperimentalWithCallbackMethod_AddDataNode<ExperimentalWithCallbackMethod_RemDataNode<ExperimentalWithCallbackMethod_Quit<Service > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_AddNewFile : public BaseClass {
    private:
@@ -673,6 +742,23 @@ class NameNodeSer final {
     }
     // disable synchronous version of this method
     ::grpc::Status RemDataNode(::grpc::ServerContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_Quit() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -815,6 +901,26 @@ class NameNodeSer final {
     }
     void RequestRemDataNode(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_Quit() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestQuit(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -993,6 +1099,31 @@ class NameNodeSer final {
     virtual void RemDataNode(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_Quit() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(7,
+        new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->Quit(context, request, response, controller);
+                 }));
+    }
+    ~ExperimentalWithRawCallbackMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void Quit(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_AddNewFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -1132,9 +1263,29 @@ class NameNodeSer final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedRemDataNode(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::namenodeproto::RemDataNodeRequst,::namenodeproto::IntReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_AddNewFile<WithStreamedUnaryMethod_DelFile<WithStreamedUnaryMethod_DelDir<WithStreamedUnaryMethod_GetFileSize<WithStreamedUnaryMethod_ReadFromFile<WithStreamedUnaryMethod_AddDataNode<WithStreamedUnaryMethod_RemDataNode<Service > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_Quit : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_Quit() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler< ::namenodeproto::EmptyRequest, ::namenodeproto::IntReply>(std::bind(&WithStreamedUnaryMethod_Quit<BaseClass>::StreamedQuit, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_Quit() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedQuit(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::namenodeproto::EmptyRequest,::namenodeproto::IntReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_AddNewFile<WithStreamedUnaryMethod_DelFile<WithStreamedUnaryMethod_DelDir<WithStreamedUnaryMethod_GetFileSize<WithStreamedUnaryMethod_ReadFromFile<WithStreamedUnaryMethod_AddDataNode<WithStreamedUnaryMethod_RemDataNode<WithStreamedUnaryMethod_Quit<Service > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_AddNewFile<WithStreamedUnaryMethod_DelFile<WithStreamedUnaryMethod_DelDir<WithStreamedUnaryMethod_GetFileSize<WithStreamedUnaryMethod_ReadFromFile<WithStreamedUnaryMethod_AddDataNode<WithStreamedUnaryMethod_RemDataNode<Service > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_AddNewFile<WithStreamedUnaryMethod_DelFile<WithStreamedUnaryMethod_DelDir<WithStreamedUnaryMethod_GetFileSize<WithStreamedUnaryMethod_ReadFromFile<WithStreamedUnaryMethod_AddDataNode<WithStreamedUnaryMethod_RemDataNode<WithStreamedUnaryMethod_Quit<Service > > > > > > > > StreamedService;
 };
 
 }  // namespace namenodeproto

@@ -10,8 +10,7 @@
 using namespace std;
 
 INodeFile::INodeFile()
-  : INode()
-{}
+        : INode() {}
 
 /*
  * 此处使用了INodeDirectory
@@ -43,46 +42,39 @@ tempnode; break;
  */
 
 INodeFile::INodeFile(string name, time_t mtime, time_t atime, time_t ctime)
-  : INode(name, mtime, atime, ctime)
-{
+        : INode(name, mtime, atime, ctime) {
     this->size = 0;
 }
 
 INodeFile::INodeFile(INode *other)
-  : INode(other)
-{
+        : INode(other) {
     //    this->filepath = other->filepath;
     this->size = INodeFile(other).size;
     this->fileblocks = INodeFile(other).fileblocks;
 }
 
 long long
-  INodeFile::getSize()
-{
+INodeFile::getSize() {
     return this->size;
 }
 
 bool
-  INodeFile::isNULL()
-{
+INodeFile::isNULL() {
     return false;
 }
 
 bool
-  INodeFile::isDirectory()
-{
+INodeFile::isDirectory() {
     return false;
 }
 
 bool
-  INodeFile::isRoot()
-{
+INodeFile::isRoot() {
     return false;
 }
 
 int
-  INodeFile::write(const char *content, long long size)
-{
+INodeFile::write(const char *content, long long size) {
     this->size = size;
     int seg_size = fsndn::seg_size;
     if (size <= seg_size) {
@@ -97,16 +89,16 @@ int
             memset(temp_content, 0, seg_size);
             memmove(temp_content, content + (seg * seg_size), seg_size);
             FileBlock fileBlock(
-              this->getNdnPath(), temp_content, seg_size, seg);
+                    this->getNdnPath(), temp_content, seg_size, seg);
             fileblocks.push_back(fileBlock);
             seg++;
         }
         // 把最后一点放进去
         memset(temp_content, 0, seg_size);
         memmove(
-          temp_content, content + (seg * seg_size), size - (seg * seg_size));
+                temp_content, content + (seg * seg_size), size - (seg * seg_size));
         FileBlock fileBlock(
-          this->getNdnPath(), temp_content, size - (seg * seg_size), seg);
+                this->getNdnPath(), temp_content, size - (seg * seg_size), seg);
         delete[] temp_content;
         fileblocks.push_back(fileBlock);
     }
@@ -114,8 +106,7 @@ int
 }
 
 int
-  INodeFile::read(char *buffer, long long size)
-{
+INodeFile::read(char *buffer, long long size) {
     int seg_size = fsndn::seg_size;
     //    FILE_LOG(LOG_DEBUG)<< "segs = " << fileblocks.size()<< endl;
     for (auto item : fileblocks) {
@@ -132,11 +123,10 @@ int
 }
 
 int
-  INodeFile::insertSeg(const char *content, int size, int seg)
-{
+INodeFile::insertSeg(const char *content, int size, int seg) {
     if (size > fsndn::seg_size) {
         FILE_LOG(LOG_ERROR)
-          << "Insert Seg error, content size is bigger than seg size!" << endl;
+            << "Insert Seg error, content size is bigger than seg size!" << endl;
         return -1;
     }
     this->size += size;
@@ -146,14 +136,19 @@ int
 }
 
 int
-  INodeFile::readSeg(char *buffer, int size, int seg)
-{
+INodeFile::readSeg(char *buffer, int size, int seg) {
     if (size > fsndn::seg_size) {
         FILE_LOG(LOG_ERROR)
-          << "Get Seg error, buffer size is bigger than ndn seg size!" << endl;
+            << "Get Seg error, buffer size is bigger than ndn seg size!" << endl;
         return -1;
     }
     // TODO: 此处可以通过二分查找来提高速度
+    // 虽然感觉此处加快速度对系统整体的性能提升意义不大，但是针对论文的书写，可以加快一下这里的读写。
+//    char *temp_content = new char[size];
+    this->fileblocks[seg % this->fileblocks.size()].read(buffer, size);
+//    memmove(buffer, temp_content, size);
+//    delete[] temp_content;
+    /*
     for (auto item : fileblocks) {
         if (item.getSeg() == seg) {
             //            int seg_size = item.getSize();
@@ -169,12 +164,12 @@ int
             break;
         }
     }
+     */
     return 0;
 }
 
 int
-  INodeFile::removeFile()
-{
+INodeFile::removeFile() {
     FILE_LOG(LOG_DEBUG) << "removeFile need to be implmented" << endl;
     return -1;
 }

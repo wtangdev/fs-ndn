@@ -26,6 +26,7 @@ static const char* NameNodeSer_method_names[] = {
   "/namenodeproto.NameNodeSer/ReadFromFile",
   "/namenodeproto.NameNodeSer/AddDataNode",
   "/namenodeproto.NameNodeSer/RemDataNode",
+  "/namenodeproto.NameNodeSer/Quit",
 };
 
 std::unique_ptr< NameNodeSer::Stub> NameNodeSer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -42,6 +43,7 @@ NameNodeSer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_ReadFromFile_(NameNodeSer_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_AddDataNode_(NameNodeSer_method_names[5], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_RemDataNode_(NameNodeSer_method_names[6], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Quit_(NameNodeSer_method_names[7], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status NameNodeSer::Stub::AddNewFile(::grpc::ClientContext* context, const ::namenodeproto::AddNewFileRequest& request, ::namenodeproto::SegIndexReply* response) {
@@ -184,6 +186,26 @@ void NameNodeSer::Stub::experimental_async::RemDataNode(::grpc::ClientContext* c
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::namenodeproto::IntReply>::Create(channel_.get(), cq, rpcmethod_RemDataNode_, context, request, false);
 }
 
+::grpc::Status NameNodeSer::Stub::Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::namenodeproto::IntReply* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Quit_, context, request, response);
+}
+
+void NameNodeSer::Stub::experimental_async::Quit(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Quit_, context, request, response, std::move(f));
+}
+
+void NameNodeSer::Stub::experimental_async::Quit(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::namenodeproto::IntReply* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Quit_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* NameNodeSer::Stub::AsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::namenodeproto::IntReply>::Create(channel_.get(), cq, rpcmethod_Quit_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::namenodeproto::IntReply>* NameNodeSer::Stub::PrepareAsyncQuitRaw(::grpc::ClientContext* context, const ::namenodeproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::namenodeproto::IntReply>::Create(channel_.get(), cq, rpcmethod_Quit_, context, request, false);
+}
+
 NameNodeSer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       NameNodeSer_method_names[0],
@@ -220,6 +242,11 @@ NameNodeSer::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< NameNodeSer::Service, ::namenodeproto::RemDataNodeRequst, ::namenodeproto::IntReply>(
           std::mem_fn(&NameNodeSer::Service::RemDataNode), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameNodeSer_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameNodeSer::Service, ::namenodeproto::EmptyRequest, ::namenodeproto::IntReply>(
+          std::mem_fn(&NameNodeSer::Service::Quit), this)));
 }
 
 NameNodeSer::Service::~Service() {
@@ -268,6 +295,13 @@ NameNodeSer::Service::~Service() {
 }
 
 ::grpc::Status NameNodeSer::Service::RemDataNode(::grpc::ServerContext* context, const ::namenodeproto::RemDataNodeRequst* request, ::namenodeproto::IntReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameNodeSer::Service::Quit(::grpc::ServerContext* context, const ::namenodeproto::EmptyRequest* request, ::namenodeproto::IntReply* response) {
   (void) context;
   (void) request;
   (void) response;

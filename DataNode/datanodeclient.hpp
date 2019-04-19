@@ -50,6 +50,7 @@ class DataNodeClient
     vector<string> showAllChildren();
     long long getSpaceSize() const;
     int getNodeId();
+    int quit();
 
     bool operator==(const int& other_node_id) const;
     bool operator<(const DataNodeClient& other_node) const;

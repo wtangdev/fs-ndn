@@ -87,7 +87,7 @@ NameNode::addNewFile(string name,
     }
     if (!this->spaceEnough(size)) {
         FILE_LOG(LOG_ERROR) << "FSNDN IS FULL!" << endl;
-        return -1;
+        return -2;
     }
     int seg_size = fsndn::seg_size;
     if (size < seg_size) {
@@ -133,6 +133,7 @@ NameNode::addNewFile(string name,
                     this->data_nodes[i].getNodeId(),
                     seg,
                     item_size);
+            cout<< this->data_nodes[i].getNodeId()<< " "<< seg<< " "<< item_size<< endl;
             seg++;
         }
     }

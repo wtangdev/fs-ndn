@@ -74,6 +74,9 @@ class DataNodeSerImpl final : public DataNodeSer::Service
     Status GetSpaceSize(ServerContext* context,
                         const EmptyRequest* request,
                         LongReply* response);
+    Status Quit(ServerContext *context,
+            const EmptyRequest * request,
+            IntReply * response);
 
   private:
     DataNode datanode;

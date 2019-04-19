@@ -14,9 +14,11 @@ service NameNodeSer {
   rpc ReadFromFile (ReadRequest) returns (SegIndexReply) {};
   rpc AddDataNode (AddDataNodeRequst) returns (IntReply) {};
   rpc RemDataNode (RemDataNodeRequst) returns (IntReply) {};
+  rpc Quit (EmptyRequest) returns (IntReply) {};
 }
 
 // The Request message containing the user's name.
+
 message AddNewFileRequest {
   string name = 1;
   int64 size = 2;

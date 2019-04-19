@@ -156,6 +156,15 @@ NameNodeClient::getFileSize(const string &name) {
     return response.result();
 }
 
+void
+NameNodeClient::quit() {
+    namenodeproto::EmptyRequest request;
+    namenodeproto::IntReply reply;
+    ClientContext context;
+    stub_->Quit(&context, request, &reply);
+    return;
+}
+
 bool
 NameNodeClient::operator==(const int &other_node_id) const {
     return this->node_id == other_node_id;

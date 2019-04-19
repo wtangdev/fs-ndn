@@ -4,13 +4,10 @@
 #include <string.h>
 #include <sys/msg.h>
 #include <errno.h>
+#include "Client/clientserver.hpp"
 #include "fs.hpp"
 
 using  namespace std;
-
-#define MAX_TEXT 256
-std::string path = "./namo_amitabha";
-const int fsndn::seg_size = 1048576; //
 
 struct msg_st {
     long int msg_type;

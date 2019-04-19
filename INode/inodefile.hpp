@@ -20,6 +20,9 @@ class INodeFile : public INode
     int write(const char* content, long long size);
     int read(char* buffer, long long size);
 
+    // 虽然感觉此处加快速度对系统整体的性能提升意义不大，但是针对论文的书写，可以加快一下这里的读写。
+    // 使用的方法是，每一个节点存储的段都是连续且相等的，所以可以根据数组下标轻松的找到需要的段
+    // 在read时只需要进行一下膜运算即可.
     int insertSeg(const char* content, int size, int seg);
     int readSeg(char* buffer, int size, int seg);
 

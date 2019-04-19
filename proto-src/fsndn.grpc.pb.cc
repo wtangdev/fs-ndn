@@ -31,6 +31,7 @@ static const char* DataNodeSer_method_names[] = {
   "/fsndnproto.DataNodeSer/GetChildren",
   "/fsndnproto.DataNodeSer/GetAllChildren",
   "/fsndnproto.DataNodeSer/GetSpaceSize",
+  "/fsndnproto.DataNodeSer/Quit",
 };
 
 std::unique_ptr< DataNodeSer::Stub> DataNodeSer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -52,6 +53,7 @@ DataNodeSer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_GetChildren_(DataNodeSer_method_names[9], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetAllChildren_(DataNodeSer_method_names[10], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetSpaceSize_(DataNodeSer_method_names[11], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Quit_(DataNodeSer_method_names[12], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status DataNodeSer::Stub::AddEmptyFile(::grpc::ClientContext* context, const ::fsndnproto::AddEmptyFileRequest& request, ::fsndnproto::IntReply* response) {
@@ -294,6 +296,26 @@ void DataNodeSer::Stub::experimental_async::GetSpaceSize(::grpc::ClientContext* 
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::fsndnproto::LongReply>::Create(channel_.get(), cq, rpcmethod_GetSpaceSize_, context, request, false);
 }
 
+::grpc::Status DataNodeSer::Stub::Quit(::grpc::ClientContext* context, const ::fsndnproto::EmptyRequest& request, ::fsndnproto::IntReply* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Quit_, context, request, response);
+}
+
+void DataNodeSer::Stub::experimental_async::Quit(::grpc::ClientContext* context, const ::fsndnproto::EmptyRequest* request, ::fsndnproto::IntReply* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Quit_, context, request, response, std::move(f));
+}
+
+void DataNodeSer::Stub::experimental_async::Quit(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::fsndnproto::IntReply* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Quit_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::fsndnproto::IntReply>* DataNodeSer::Stub::AsyncQuitRaw(::grpc::ClientContext* context, const ::fsndnproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::fsndnproto::IntReply>::Create(channel_.get(), cq, rpcmethod_Quit_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::fsndnproto::IntReply>* DataNodeSer::Stub::PrepareAsyncQuitRaw(::grpc::ClientContext* context, const ::fsndnproto::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::fsndnproto::IntReply>::Create(channel_.get(), cq, rpcmethod_Quit_, context, request, false);
+}
+
 DataNodeSer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataNodeSer_method_names[0],
@@ -355,6 +377,11 @@ DataNodeSer::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< DataNodeSer::Service, ::fsndnproto::EmptyRequest, ::fsndnproto::LongReply>(
           std::mem_fn(&DataNodeSer::Service::GetSpaceSize), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      DataNodeSer_method_names[12],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< DataNodeSer::Service, ::fsndnproto::EmptyRequest, ::fsndnproto::IntReply>(
+          std::mem_fn(&DataNodeSer::Service::Quit), this)));
 }
 
 DataNodeSer::Service::~Service() {
@@ -438,6 +465,13 @@ DataNodeSer::Service::~Service() {
 }
 
 ::grpc::Status DataNodeSer::Service::GetSpaceSize(::grpc::ServerContext* context, const ::fsndnproto::EmptyRequest* request, ::fsndnproto::LongReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status DataNodeSer::Service::Quit(::grpc::ServerContext* context, const ::fsndnproto::EmptyRequest* request, ::fsndnproto::IntReply* response) {
   (void) context;
   (void) request;
   (void) response;
