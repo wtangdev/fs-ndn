@@ -71,49 +71,55 @@ readFileThread(vector<DataNodeClient>::iterator it,
     delete[] temp_content;
 }
 
+mutex mutex_write;
+
 void
-highWriteFileThread(vector<DataNodeClient>::iterator it,
-                    string name,
-                    string file_path,
-                    vector<SegWithSize> ss)
+highWriteFileThread(const vector<DataNodeClient>::iterator it,
+                    const string name,
+                    ifstream * fin,
+                    const vector<SegWithSize> ss)
 {
     int seg_size = fsndn::seg_size;
-    ifstream fin(file_path, ios::binary | ios::in);
     char *temp_content = new char[seg_size];
     // TODO: 如果传输过程发生错误，此处如何进行处理？出错重传等
     // 步骤5:写入应答
     for (auto item : ss) {
-        fin.seekg(item.seg * seg_size);
-        fin.read(temp_content, item.size);
+        mutex_write.try_lock();
+        fin->seekg(item.seg * seg_size);
+        fin->read(temp_content, item.size);
+        mutex_write.unlock();
         (*it).addFileSeg(name, temp_content, item.size, item.seg);
     }
-    fin.close();
     delete[] temp_content;
 }
 
+mutex mutex_read;
+
 void
-highReadFileThread(vector<DataNodeClient>::iterator it,
-                   string name,
-                   string file_path,
-                   vector<SegWithSize> ss)
+highReadFileThread(const vector<DataNodeClient>::iterator it,
+                   const string name,
+                   ofstream * fout,
+                   const vector<SegWithSize> ss)
 {
     int seg_size = fsndn::seg_size;
     char *temp_content = new char[seg_size];
-    ofstream fout(file_path, ios::binary | ios::in);
     for (auto item : ss) {
         (*it).getFileSeg(name, temp_content, item.size, item.seg);
-        fout.seekp(seg_size * item.seg);
-        fout.write(temp_content, item.size);
+        // 准备写
+        mutex_read.try_lock();
+        fout->seekp(seg_size * item.seg);
+        fout->write(temp_content, item.size);
+        // 释放
+        mutex_read.unlock();
     }
-    fout.close();
     delete[] temp_content;
 }
-
+/*
 void
-highWriteFileSignThread(vector<DataNodeClient>::iterator it,
-                        string name,
-                        string file_path,
-                        vector<SegWithSize> ss)
+highWriteFileSignThread(const vector<DataNodeClient>::iterator it,
+                        const string name,
+                        const string file_path,
+                        const vector<SegWithSize> ss)
 {
     FILE_LOG(LOG_DEBUG)<< "I am waiting for something then write!!!!"<< endl;
     int seg_size = fsndn::seg_size;
@@ -137,7 +143,67 @@ highWriteFileSignThread(vector<DataNodeClient>::iterator it,
     fin.close();
     delete[] content_sign;
 }
+*/
 
+mutex mutex_write_sign;
+void
+highWriteFileSignThread(const vector<DataNodeClient>::iterator it,
+                        const string name,
+                        ifstream * fin,
+                        const vector<SegWithSize> ss)
+{
+    FILE_LOG(LOG_DEBUG)<< "I am waiting for something then write!!!!"<< endl;
+    int seg_size = fsndn::seg_size;
+    char *content_sign = new char[seg_size];
+    // TODO: 如果传输过程发生错误，此处如何进行处理？出错重传等
+    // 步骤5:写入应答
+    for (auto item : ss) {
+        FILE_LOG(LOG_DEBUG)<< item.seg<< endl;
+        mutex_write_sign.try_lock();
+        fin->seekg(item.seg * (seg_size - 256));
+        fin->read(content_sign + 256, item.size - 256);
+        mutex_write_sign.unlock();
+        ndn::Data data;
+        data.setName(name);
+        data.setContent((const uint8_t *) content_sign + 256, item.size - 256);
+        fsndn::keyChain->sign(data, fsndn::certificateName);
+        memcpy(content_sign,
+               data.getSignature()->getSignature().toRawStr().c_str(),
+               256);
+        (*it).addFileSeg(name, content_sign, item.size, item.seg);
+    }
+    delete[] content_sign;
+}
+
+// 用来解决写冲突的互斥量
+mutex mutex_read_sign;
+
+void
+highReadFileSignThread(const vector<DataNodeClient>::iterator it,
+                       const string name,
+                       ofstream * fout,
+                       const vector<SegWithSize> ss)
+{
+    FILE_LOG(LOG_DEBUG)<< "I am waiting for something then read!!!!"<< endl;
+    int seg_size = fsndn::seg_size;
+    char *content_sign = new char[seg_size];
+    for (auto item : ss) {
+        FILE_LOG(LOG_DEBUG)<< item.seg<< endl;
+        (*it).getFileSeg(name, content_sign, item.size, item.seg);
+        // 准备写了，加锁
+        mutex_read_sign.try_lock();
+        fout->seekp((seg_size - 256) * item.seg);
+        fout->write(content_sign + 256, item.size - 256);
+        // 写完了，释放
+        mutex_read_sign.unlock();
+        FILE_LOG(LOG_DEBUG) << Client::checkSignautre(
+                  name, content_sign + 256, item.size - 256, content_sign)
+             << endl;
+    }
+    delete[] content_sign;
+}
+
+/*
 void
 highReadFileSignThread(vector<DataNodeClient>::iterator it,
                        string name,
@@ -160,6 +226,7 @@ highReadFileSignThread(vector<DataNodeClient>::iterator it,
     fout.close();
     delete[] content_sign;
 }
+*/
 
 bool
 Client::checkSignautre(string name,
@@ -479,14 +546,23 @@ Client::addNewFile(
     // 步骤3：文件分段信息已由NameNode生成，写入DataNode
     int seg_size = fsndn::seg_size;
     // TODO: 并行写入
-
+    vector<thread *> threads;
+    ifstream * fin_point = new ifstream(file_path, ios::binary | ios::in);
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
           find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
-        thread t(highWriteFileThread, ref(it), name, file_path, si.segs);
-        t.join();
+        thread *t = new thread(highWriteFileThread, it, name, fin_point, si.segs);
+        threads.push_back(t);
     }
+    for (int i = 0; i < threads.size(); i++) {
+        threads[i]->join();
+    }
+    for (int i = 0; i < threads.size(); i++) {
+        delete threads[i];
+    }
+    fin_point->close();
+    delete fin_point;
     /*
         for (SegIndex si : store_segs) {
             int node_id = si.node;
@@ -554,14 +630,24 @@ Client::readFile(string name, string file_path)
     }
 
     // 步骤4:并行读取
+    vector<thread *> threads;
+    ofstream * fout_point = new ofstream(file_path, ios::binary | ios::in);
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
           find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
-        thread t(highReadFileThread, ref(it), name, file_path, si.segs);
-        t.join();
+        thread * t = new thread(highReadFileThread, it, name, fout_point, si.segs);
+        threads.push_back(t);
     }
-
+    for (int i = 0; i < threads.size(); i++) {
+        threads[i]->join();
+    }
+    for (int i = 0; i < threads.size(); i++) {
+        delete threads[i];
+    }
+    fout_point->close();
+    delete fout_point;
+ 
     /*
     char *buffer = new char[buffer_size];
     for (SegIndex si : store_segs) {
@@ -656,14 +742,24 @@ Client::addNewFileSign(
 
     // 步骤3：文件分段信息已由NameNode生成，写入DataNode
     // TODO: 并行写入
-
+    ifstream * fin_point = new ifstream(file_path, ios::binary | ios::in);
+    vector<thread *> threads;
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
           find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
-        thread t(highWriteFileSignThread, ref(it), name, file_path, si.segs);
-        t.join();
+        // thread * t = new thread(highWriteFileSignThread, it, name, file_path, si.segs);
+        thread * t = new thread(highWriteFileSignThread, it, name, fin_point, si.segs);
+        threads.push_back(t);
     }
+    for (int i = 0; i < threads.size(); i++) {
+        threads[i]->join();
+    }
+    for (int i = 0; i < threads.size(); i++) {
+        delete threads[i];
+    }
+    fin_point->close();
+    delete fin_point;
     // TODO: 步骤6关闭？
     // TODO:
     //
@@ -709,14 +805,23 @@ Client::readFileSign(string name, string file_path)
     }
 
     // 步骤4:并行读取
+    vector<thread *> threads;
+    ofstream * fout_point = new ofstream(file_path, ios::binary | ios::in);
     for (SegIndex si : store_segs) {
         int node_id = si.node;
         vector<DataNodeClient>::iterator it =
           find(this->data_nodes.begin(), this->data_nodes.end(), node_id);
-        thread t(highReadFileSignThread, ref(it), name, file_path, si.segs);
-        t.join();
+        thread * t = new thread(highReadFileSignThread, it, name, fout_point, si.segs);
+        threads.push_back(t);
     }
-
+    for (int i = 0; i < threads.size(); i++) {
+        threads[i]->join();
+    }
+    for (int i = 0; i < threads.size(); i++) {
+        delete threads[i];
+    }
+    fout_point->close();
+    delete fout_point;
     // 步骤6： 关闭
     return 0;
 }

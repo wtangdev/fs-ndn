@@ -63,8 +63,9 @@ class Client
 
     bool static checkSignautre(string name, const char * context, int size, const char * signautre);
 
-  private:
+// it should be a private member
     vector<DataNodeClient> data_nodes;
+  private:
     vector<NameNodeClient> name_nodes;
 
     void updateNodes();
